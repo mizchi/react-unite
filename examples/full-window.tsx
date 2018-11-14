@@ -30,10 +30,8 @@ const columns = ["100px", "1fr", "1fr", "100px"];
 const areas = [
   ["a", "b", "c", "d"],
   ["e", "f", "g", "h"],
-  ["j", "k", "l", "m"]
+  ["j", "f", "l", "l"]
 ];
-
-declare var ResizeObserver: any;
 
 const FullWindow = () => {
   const ref: any = useRef(null);
@@ -47,7 +45,6 @@ const FullWindow = () => {
       const s = window.getComputedStyle(ref.current);
       console.log(s.width, s.height);
       setState([s.width, s.height] as any);
-      // debugger;
     }
 
     const onresize = () => {

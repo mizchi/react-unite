@@ -1,6 +1,9 @@
 # flexible-grid
 
-TODO: publish
+## TODO
+
+- [ ] Publish
+- [ ] Join grids and hide controller
 
 [demo](https://admiring-curie-8355d7.netlify.com)
 

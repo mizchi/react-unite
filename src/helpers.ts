@@ -86,17 +86,27 @@ export function buildGridWithControl(
   const rowLength = original.areas[0].length;
 
   const areasRowUpdated = original.areas.map((rows, i) => {
-    return interpose(rows, (_0, _1, j) => {
-      const t = `v-${i}-${j}`;
-      controls.verticals.push([i, j]);
-      return t;
+    return interpose(rows, (a, b, j) => {
+      if (a === b) {
+        return a;
+      } else {
+        const t = `v-${i}-${j}`;
+        controls.verticals.push([i, j]);
+        return t;
+      }
     });
   });
-  const areas = interpose(areasRowUpdated, (_1, _2, i) => {
+
+  // TODO: connect with vertical
+  const areas = interpose(areasRowUpdated, (_0, _1, i) => {
     const spaced = new Array(rowLength).fill(0).map((_, j) => {
-      const t = `h-${i}-${j}`;
-      controls.horizontals.push([i, j]);
-      return t;
+      if (original.areas[i][j] === original.areas[i + 1][j]) {
+        return original.areas[i][j];
+      } else {
+        const t = `h-${i}-${j}`;
+        controls.horizontals.push([i, j]);
+        return t;
+      }
     });
 
     return interpose(spaced, (a, _, j) => {
