@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { GridProps, Grid } from "./Grid";
 import {
-  gridExprToPixel,
+  gridExprToPixels,
   numberToPixel,
   pixelToNumber,
   buildGridWithControl
@@ -150,7 +150,7 @@ const EditableGridInner = (props: EditableGridProps) => {
         ...restProps,
         ...gridData
       }}
-      style={{ backgroundColor: holding && "#ccc" }}
+      // style={{ backgroundColor: holding && "#ccc" }}
     >
       {!showChildren && children}
       {props.showVertical !== false &&
@@ -229,8 +229,8 @@ export function EditableGrid(props: {
   const w = width - spacerSize * (m - 1);
   const h = height - spacerSize * (n - 1);
   const gridData = {
-    rows: gridExprToPixel(rows, h),
-    columns: gridExprToPixel(columns, w),
+    rows: gridExprToPixels(rows, h),
+    columns: gridExprToPixels(columns, w),
     areas
   };
 

@@ -1,5 +1,4 @@
 import React from "react";
-// import styled from "styled-components";
 
 export type GridProps = {
   columns: string[];

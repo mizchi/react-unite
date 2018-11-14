@@ -34,7 +34,7 @@ export function numberToPixel(expr: number): string {
   return `${expr}px`;
 }
 
-export function gridExprToPixel(exprs: string[], maxSize: number): string[] {
+export function gridExprToPixels(exprs: string[], maxSize: number): string[] {
   const pxSum = exprs
     .filter(n => n.includes("px"))
     .map(pixelToNumber)

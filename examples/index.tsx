@@ -1,7 +1,6 @@
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import { EditableGrid } from "./EditableGrid";
-import { Grid, GridArea } from "./Grid";
+import { EditableGrid, Grid, GridArea } from "../src";
 
 // --- components
 

@@ -2,8 +2,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "parcel src/index.html --open",
-    "build": "parcel build src/index.html",
+    "dev": "parcel examples/index.html --open",
+    "build": "parcel build examples/index.html",
     "test": "jest",
     "deploy": "netlify deploy -d dist --prod"
   },
@@ -11,7 +11,6 @@
     "@types/jest": "^23.3.9",
     "@types/react": "^16.7.3",
     "@types/react-dom": "^16.0.9",
-    "@types/styled-components": "^4.0.3",
     "jest": "^23.6.0",
     "netlify-cli": "^2.2.1",
     "parcel-bundler": "^1.10.3",
@@ -20,7 +19,6 @@
   },
   "dependencies": {
     "react": "16.7.0-alpha.0",
-    "react-dom": "16.7.0-alpha.0",
-    "styled-components": "^4.1.1"
+    "react-dom": "16.7.0-alpha.0"
   }
 }
