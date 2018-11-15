@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GridData, GridControllers } from "./types";
 import { Grid } from "./Grid";
 import { buildEditableGridData } from "./buildEditableGridData";
-import { gridExprToPixels, numberToPixel, pixelToNumber } from "./helpers";
+import { exprsToPixels, numberToPixel, pixelToNumber } from "./helpers";
 import { HitArea } from "./HitArea";
 
 type Props = {
@@ -39,8 +39,8 @@ export function EditableGrid({
   const w = pixelToNumber(width) - spacerSize * (m - 1);
   const h = pixelToNumber(height) - spacerSize * (n - 1);
   const original = {
-    rows: gridExprToPixels(rows, h),
-    columns: gridExprToPixels(columns, w),
+    rows: exprsToPixels(rows, h),
+    columns: exprsToPixels(columns, w),
     areas
   };
 

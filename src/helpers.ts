@@ -1,5 +1,3 @@
-import { EditbalGridData, GridControllers, GridData } from "./types";
-
 export function interpose<T>(
   list: T[],
   interposer: (a: T, b: T, aIndex: number, bIndex: number) => T
@@ -34,7 +32,11 @@ export function numberToPixel(expr: number): string {
   return `${expr}px`;
 }
 
-export function gridExprToPixels(exprs: string[], maxSize: number): string[] {
+export function numberToFraction(expr: number): string {
+  return `${expr}fr`;
+}
+
+export function exprsToPixels(exprs: string[], maxSize: number): string[] {
   const pxSum = exprs
     .filter(n => n.includes("px"))
     .map(pixelToNumber)
@@ -55,4 +57,13 @@ export function gridExprToPixels(exprs: string[], maxSize: number): string[] {
       }
     })
     .map(numberToPixel);
+}
+
+export function pixelsToFractions(exprs: string[]): string[] {
+  const values = exprs.map(pixelToNumber);
+  const minVal = Math.min(...values);
+  const fractionsRates = values.map(v => {
+    return v / minVal;
+  });
+  return fractionsRates.map(numberToFraction);
 }

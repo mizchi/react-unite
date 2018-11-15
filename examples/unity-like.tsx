@@ -2,7 +2,13 @@ import "./elements";
 
 import React, { useRef, useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { EditableGrid, GridArea, pixelToNumber, GridData } from "../src";
+import {
+  EditableGrid,
+  GridArea,
+  pixelToNumber,
+  GridData,
+  pixelsToFractions
+} from "../src";
 
 const root = document.querySelector(".root");
 const columns = ["1fr", "1.5fr"];
@@ -39,7 +45,14 @@ const UnityEditor = () => {
         height={pixelToNumber(height)}
         spacerSize={8}
         onChangeGridData={data => {
-          console.log("data", data);
+          // console.log("data", data);
+          const compiled = {
+            ...data,
+            rows: pixelsToFractions(data.rows),
+            columns: pixelsToFractions(data.columns)
+          };
+          // console.log("compiled", compiled);
+          setGridData(compiled);
         }}
         {...currentGridData}
       >
@@ -70,9 +83,7 @@ function useWindowSize(ref: React.RefObject<HTMLDivElement>): [string, string] {
 
   useLayoutEffect(() => {
     if (ref.current) {
-      console.log(ref.current);
       const s = window.getComputedStyle(ref.current);
-      console.log(s.width, s.height);
       setState([s.width, s.height] as any);
     }
 
