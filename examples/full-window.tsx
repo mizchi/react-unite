@@ -1,28 +1,8 @@
+import "./elements";
+
 import React, { useRef, useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { EditableGrid, GridArea, pixelToNumber } from "../src";
-
-// --- components
-
-function DummyPane() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-        padding: "10px",
-        border: "3px solid white",
-        boxSizing: "border-box",
-        backgroundColor: "rgba(0, 128, 0, 0.4)"
-      }}
-    >
-      Dummy Pane
-    </div>
-  );
-}
 
 const root = document.querySelector(".root");
 const rows = ["1fr", "2fr", "1fr"];
@@ -33,12 +13,12 @@ const areas = [
   ["j", "f", "l", "l"]
 ];
 
-const FullWindow = () => {
-  const ref: any = useRef(null);
-  const [state, setState] = useState<null | [string, string]>([
+const useWindowSize = (ref: any): [string, string] => {
+  const [state, setState] = useState<[string, string]>([
     window.innerWidth,
     window.innerHeight
   ] as any);
+
   useLayoutEffect(() => {
     if (ref.current) {
       console.log(ref.current);
@@ -54,6 +34,14 @@ const FullWindow = () => {
     return () => window.removeEventListener("resize", onresize);
   }, []);
 
+  return state;
+};
+
+const FullWindow = () => {
+  const ref: any = useRef(null);
+
+  const [width, height] = useWindowSize(ref);
+
   return (
     <div
       ref={ref as any}
@@ -62,37 +50,34 @@ const FullWindow = () => {
         height: "100vh"
       }}
     >
-      {state == null && <span>Loading...</span>}
-      {state && (
-        <EditableGrid
-          key={state.join("-")}
-          width={pixelToNumber(state[0])}
-          height={pixelToNumber(state[1])}
-          spacerSize={6}
-          rows={rows}
-          columns={columns}
-          areas={areas}
-        >
-          <GridArea name="a">
-            <DummyPane />
-          </GridArea>
-          <GridArea name="b">
-            <DummyPane />
-          </GridArea>
-          <GridArea name="d">
-            <DummyPane />
-          </GridArea>
-          <GridArea name="f">
-            <DummyPane />
-          </GridArea>
-          <GridArea name="h">
-            <DummyPane />
-          </GridArea>
-          <GridArea name="l">
-            <DummyPane />
-          </GridArea>
-        </EditableGrid>
-      )}
+      <EditableGrid
+        key={`${width}-${height}`}
+        width={pixelToNumber(width)}
+        height={pixelToNumber(height)}
+        spacerSize={8}
+        rows={rows}
+        columns={columns}
+        areas={areas}
+      >
+        <GridArea name="a">
+          <x-pane>a</x-pane>
+        </GridArea>
+        <GridArea name="b">
+          <x-pane>b</x-pane>
+        </GridArea>
+        <GridArea name="d">
+          <x-pane>d</x-pane>
+        </GridArea>
+        <GridArea name="f">
+          <x-pane>f</x-pane>
+        </GridArea>
+        <GridArea name="h">
+          <x-pane>h</x-pane>
+        </GridArea>
+        <GridArea name="l">
+          <x-pane style={{ backgroundColor: "#ccc" }}>l</x-pane>
+        </GridArea>
+      </EditableGrid>
     </div>
   );
 };

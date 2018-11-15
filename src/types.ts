@@ -4,11 +4,11 @@ export type GridData = {
   areas: string[][];
 };
 
-export type GridDataWithControl = GridData & {
-  controls: GridControls;
+export type EditbalGridData = GridData & {
+  controllers: GridControllers;
 };
 
-export type GridControls = {
+export type GridControllers = {
   verticals: [number, number][];
   horizontals: [number, number][];
   crosses: [number, number][];

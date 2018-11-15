@@ -1,3 +1,5 @@
+import "./elements";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { EditableGrid, Grid, GridArea } from "../src";
@@ -48,7 +50,7 @@ ReactDOM.render(
       areas={areas}
     >
       <GridArea name="a">
-        <DummyPane />
+        <x-pane>A</x-pane>
       </GridArea>
       <GridArea name="b">
         <DummyPane />

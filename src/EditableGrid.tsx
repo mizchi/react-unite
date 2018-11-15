@@ -1,38 +1,9 @@
 import React, { useState } from "react";
 import { GridProps, Grid } from "./Grid";
-import {
-  gridExprToPixels,
-  numberToPixel,
-  pixelToNumber,
-  buildGridWithControl
-} from "./helpers";
+import { buildEditableGridData } from "./buildEditableGridData";
+import { gridExprToPixels, numberToPixel, pixelToNumber } from "./helpers";
 
-function HitArea(props: {
-  name: string;
-  onDragStart: any;
-  onDragEnd: any;
-  onDrag: any;
-}) {
-  return (
-    <div
-      onDragStart={props.onDragStart}
-      onDragEnd={props.onDragEnd}
-      onDrag={props.onDrag}
-      draggable
-      style={{
-        cursor: "grab",
-        gridArea: props.name,
-        width: "100%",
-        height: "100%",
-        outline: "1px solid gray",
-        boxSizing: "border-box",
-        backgroundColor: "black"
-      }}
-    />
-  );
-}
-
-type EditableGridProps = GridProps & {
+type Props = GridProps & {
   spacerSize: number;
   showVertical: boolean;
   showHorizontal: boolean;
@@ -40,7 +11,61 @@ type EditableGridProps = GridProps & {
   hideOnResize: boolean;
 };
 
-const EditableGridInner = (props: EditableGridProps) => {
+export function EditableGrid(props: {
+  width: number;
+  height: number;
+  spacerSize: number;
+  rows: string[];
+  columns: string[];
+  areas: string[][];
+  children: React.ReactNode;
+  showVertical?: boolean;
+  showHorizontal?: boolean;
+  showCrossPoint?: boolean;
+  hideOnResize?: boolean;
+}) {
+  // settings
+  const {
+    width,
+    height,
+    spacerSize,
+    rows,
+    columns,
+    areas,
+    showCrossPoint = true,
+    showHorizontal = true,
+    showVertical = true,
+    hideOnResize = false,
+    ...others
+  } = props;
+  const m = columns.length;
+  const n = rows.length;
+  const w = width - spacerSize * (m - 1);
+  const h = height - spacerSize * (n - 1);
+
+  const gridData = {
+    rows: gridExprToPixels(rows, h),
+    columns: gridExprToPixels(columns, w),
+    areas
+  };
+
+  return (
+    <EditableGridInner
+      width={numberToPixel(width)}
+      height={numberToPixel(height)}
+      spacerSize={spacerSize}
+      showVertical={showVertical}
+      showHorizontal={showHorizontal}
+      showCrossPoint={showCrossPoint}
+      hideOnResize={hideOnResize}
+      {...{ ...gridData, ...others }}
+    >
+      {props.children}
+    </EditableGridInner>
+  );
+}
+
+const EditableGridInner = (props: Props) => {
   const {
     children,
     showCrossPoint,
@@ -57,7 +82,7 @@ const EditableGridInner = (props: EditableGridProps) => {
     ["v" | "h" | "c", number, number, number, number, number[], number[]] | null
   >(null);
 
-  const { controls, ...gridData } = buildGridWithControl(
+  const { controllers, ...gridData } = buildEditableGridData(
     {
       rows,
       columns,
@@ -78,8 +103,6 @@ const EditableGridInner = (props: EditableGridProps) => {
       rows.map(pixelToNumber),
       columns.map(pixelToNumber)
     ]);
-    const img = document.createElement("img");
-    ev.dataTransfer.setDragImage(img, 0, 0);
   };
 
   const onDragEnd = () => setHolding(null);
@@ -154,7 +177,7 @@ const EditableGridInner = (props: EditableGridProps) => {
     >
       {!showChildren && children}
       {props.showVertical !== false &&
-        controls.verticals.map(([i, j]) => {
+        controllers.verticals.map(([i, j]) => {
           const name = `v-${i}-${j}`;
           return (
             <HitArea
@@ -167,7 +190,7 @@ const EditableGridInner = (props: EditableGridProps) => {
           );
         })}
       {props.showHorizontal !== false &&
-        controls.horizontals.map(([i, j]) => {
+        controllers.horizontals.map(([i, j]) => {
           const name = `h-${i}-${j}`;
           return (
             <HitArea
@@ -181,7 +204,7 @@ const EditableGridInner = (props: EditableGridProps) => {
         })}
 
       {props.showCrossPoint !== false &&
-        controls.crosses.map(([i, j]) => {
+        controllers.crosses.map(([i, j]) => {
           const name = `c-${i}-${j}`;
           return (
             <HitArea
@@ -197,55 +220,37 @@ const EditableGridInner = (props: EditableGridProps) => {
   );
 };
 
-export function EditableGrid(props: {
-  width: number;
-  height: number;
-  spacerSize: number;
-  rows: string[];
-  columns: string[];
-  areas: string[][];
-  children: React.ReactNode;
-  showVertical?: boolean;
-  showHorizontal?: boolean;
-  showCrossPoint?: boolean;
-  hideOnResize?: boolean;
+function HitArea(props: {
+  name: string;
+  onDragStart: any;
+  onDragEnd: any;
+  onDrag: any;
+  color?: string;
 }) {
-  // settings
-  const {
-    width,
-    height,
-    spacerSize,
-    rows,
-    columns,
-    areas,
-    showCrossPoint = true,
-    showHorizontal = true,
-    showVertical = true,
-    hideOnResize = false,
-    ...others
-  } = props;
-  const m = columns.length;
-  const n = rows.length;
-  const w = width - spacerSize * (m - 1);
-  const h = height - spacerSize * (n - 1);
-  const gridData = {
-    rows: gridExprToPixels(rows, h),
-    columns: gridExprToPixels(columns, w),
-    areas
-  };
-
   return (
-    <EditableGridInner
-      width={numberToPixel(width)}
-      height={numberToPixel(height)}
-      spacerSize={spacerSize}
-      showVertical={showVertical}
-      showHorizontal={showHorizontal}
-      showCrossPoint={showCrossPoint}
-      hideOnResize={hideOnResize}
-      {...{ ...gridData, ...others }}
+    <div
+      style={{
+        gridArea: props.name,
+        width: "100%",
+        height: "100%",
+        outline: "1px solid white",
+        boxSizing: "border-box",
+        backgroundColor: props.color || "gray"
+      }}
     >
-      {props.children}
-    </EditableGridInner>
+      {/* Transparent draggable target */}
+      <div
+        onDragStart={props.onDragStart}
+        onDragEnd={props.onDragEnd}
+        onDrag={props.onDrag}
+        draggable
+        style={{
+          opacity: 0,
+          cursor: "grab",
+          width: "100%",
+          height: "100%"
+        }}
+      />
+    </div>
   );
 }
