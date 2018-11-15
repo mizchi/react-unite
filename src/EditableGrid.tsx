@@ -1,19 +1,13 @@
 import React, { useState } from "react";
-import { GridProps, Grid } from "./Grid";
+import { GridData, GridControllers } from "./types";
+import { Grid } from "./Grid";
 import { buildEditableGridData } from "./buildEditableGridData";
 import { gridExprToPixels, numberToPixel, pixelToNumber } from "./helpers";
+import { HitArea } from "./HitArea";
 
-type Props = GridProps & {
-  spacerSize: number;
-  showVertical: boolean;
-  showHorizontal: boolean;
-  showCrossPoint: boolean;
-  hideOnResize: boolean;
-};
-
-export function EditableGrid(props: {
-  width: number;
-  height: number;
+type Props = {
+  width: number | string;
+  height: number | string;
   spacerSize: number;
   rows: string[];
   columns: string[];
@@ -23,104 +17,143 @@ export function EditableGrid(props: {
   showHorizontal?: boolean;
   showCrossPoint?: boolean;
   hideOnResize?: boolean;
-}) {
-  // settings
-  const {
-    width,
-    height,
-    spacerSize,
-    rows,
-    columns,
-    areas,
-    showCrossPoint = true,
-    showHorizontal = true,
-    showVertical = true,
-    hideOnResize = false,
-    ...others
-  } = props;
+  onChangeGridData?: (data: GridData) => void;
+};
+
+export function EditableGrid({
+  width,
+  height,
+  spacerSize,
+  rows,
+  columns,
+  areas,
+  showCrossPoint = true,
+  showHorizontal = true,
+  showVertical = true,
+  hideOnResize = false,
+  onChangeGridData,
+  children
+}: Props) {
   const m = columns.length;
   const n = rows.length;
-  const w = width - spacerSize * (m - 1);
-  const h = height - spacerSize * (n - 1);
-
-  const gridData = {
+  const w = pixelToNumber(width) - spacerSize * (m - 1);
+  const h = pixelToNumber(height) - spacerSize * (n - 1);
+  const original = {
     rows: gridExprToPixels(rows, h),
     columns: gridExprToPixels(columns, w),
     areas
   };
 
+  const { controllers, ...editable } = buildEditableGridData(
+    original,
+    spacerSize
+  );
+
   return (
     <EditableGridInner
-      width={numberToPixel(width)}
-      height={numberToPixel(height)}
-      spacerSize={spacerSize}
+      original={original}
+      controllers={controllers}
       showVertical={showVertical}
       showHorizontal={showHorizontal}
       showCrossPoint={showCrossPoint}
       hideOnResize={hideOnResize}
-      {...{ ...gridData, ...others }}
+      spacerSize={spacerSize}
+      onChangeGridData={onChangeGridData}
     >
-      {props.children}
+      {children}
     </EditableGridInner>
   );
 }
 
-const EditableGridInner = (props: Props) => {
-  const {
-    children,
-    showCrossPoint,
-    showHorizontal,
-    showVertical,
-    hideOnResize,
-    ...restProps
-  } = props;
+type InnerProps = {
+  original: GridData;
+  controllers: GridControllers;
+  children: any;
+  spacerSize: number;
+  showVertical: boolean;
+  showHorizontal: boolean;
+  showCrossPoint: boolean;
+  hideOnResize: boolean;
+  onChangeGridData?: (data: GridData) => void;
+};
 
+type HoldingController = {
+  type: "v" | "h" | "c";
+  row: number;
+  column: number;
+  initialX: number;
+  initialY: number;
+  startRows: number[];
+  startColumns: number[];
+};
+
+const EditableGridInner = ({
+  original,
+  children,
+  spacerSize,
+  showCrossPoint,
+  showHorizontal,
+  showVertical,
+  hideOnResize,
+  controllers,
+  onChangeGridData
+}: InnerProps) => {
   // state
-  const [rows, setRows] = useState<string[]>(props.rows);
-  const [columns, setColumns] = useState<string[]>(props.columns);
-  const [holding, setHolding] = useState<
-    ["v" | "h" | "c", number, number, number, number, number[], number[]] | null
-  >(null);
 
-  const { controllers, ...gridData } = buildEditableGridData(
-    {
-      rows,
-      columns,
-      areas: props.areas
-    },
-    props.spacerSize
+  const [semanticRows, setSemanticRows] = useState<string[]>(original.rows);
+  const [semanticColumns, setSemanticColumns] = useState<string[]>(
+    original.columns
   );
+
+  const editable = buildEditableGridData(
+    {
+      rows: semanticRows,
+      columns: semanticColumns,
+      areas: original.areas
+    },
+    spacerSize
+  );
+
+  const [holding, setHolding] = useState<HoldingController | null>(null);
 
   const onDragStartFactory = (type: "v" | "h" | "c", i: number, j: number) => (
     ev: any
   ) => {
-    setHolding([
+    setHolding({
       type,
-      i,
-      j,
-      ev.pageX,
-      ev.pageY,
-      rows.map(pixelToNumber),
-      columns.map(pixelToNumber)
-    ]);
+      row: i,
+      column: j,
+      initialX: ev.pageX,
+      initialY: ev.pageY,
+      startRows: semanticRows.map(pixelToNumber),
+      startColumns: semanticColumns.map(pixelToNumber)
+    });
   };
 
-  const onDragEnd = () => setHolding(null);
+  const onDragEnd = () => {
+    setHolding(null);
+    onChangeGridData &&
+      onChangeGridData({
+        ...original,
+        rows: semanticRows,
+        columns: semanticColumns
+      });
+  };
 
   const onDrag = (event: any) => {
     if (holding) {
-      const [
+      const {
         type,
-        i,
-        j,
-        initialPageX,
-        initialPageY,
-        lastRows,
-        lastColumns
-      ] = holding;
+        row: i,
+        column: j,
+        initialX,
+        initialY,
+        startRows: lastRows,
+        startColumns: lastColumns
+      } = holding;
 
       if (type === "v" || type === "c") {
-        const dx = event.pageX - initialPageX;
+        const dx = event.pageX - initialX;
         const leftX = lastColumns[j] + dx;
         const rightX = lastColumns[j + 1] - dx;
         if (leftX > 0 && rightX > 0) {
@@ -135,14 +168,15 @@ const EditableGridInner = (props: Props) => {
               }
             })
             .map(numberToPixel);
-          if (newColumns.join("") !== columns.join("")) {
-            setColumns(newColumns);
+
+          if (newColumns.join("") !== semanticColumns.join("")) {
+            setSemanticColumns(newColumns);
           }
         }
       }
 
       if (type === "h" || type === "c") {
-        const dy = event.pageY - initialPageY;
+        const dy = event.pageY - initialY;
         const upperX = lastRows[i] + dy;
         const bottomX = lastRows[i + 1] - dy;
         if (upperX > 0 && bottomX > 0) {
@@ -157,8 +191,8 @@ const EditableGridInner = (props: Props) => {
               }
             })
             .map(numberToPixel);
-          if (newRows.join("") !== rows.join("")) {
-            setRows(newRows);
+          if (newRows.join("") !== semanticRows.join("")) {
+            setSemanticRows(newRows);
           }
         }
       }
@@ -168,15 +202,11 @@ const EditableGridInner = (props: Props) => {
   const showChildren = hideOnResize && holding;
 
   return (
-    <Grid
-      {...{
-        ...restProps,
-        ...gridData
-      }}
-      // style={{ backgroundColor: holding && "#ccc" }}
-    >
+    <Grid {...editable}>
       {!showChildren && children}
-      {props.showVertical !== false &&
+
+      {/* show controllers */}
+      {showVertical &&
         controllers.verticals.map(([i, j]) => {
           const name = `v-${i}-${j}`;
           return (
@@ -189,7 +219,7 @@ const EditableGridInner = (props: Props) => {
             />
           );
         })}
-      {props.showHorizontal !== false &&
+      {showHorizontal &&
         controllers.horizontals.map(([i, j]) => {
           const name = `h-${i}-${j}`;
           return (
@@ -202,8 +232,7 @@ const EditableGridInner = (props: Props) => {
             />
           );
         })}
-
-      {props.showCrossPoint !== false &&
+      {showCrossPoint &&
         controllers.crosses.map(([i, j]) => {
           const name = `c-${i}-${j}`;
           return (
@@ -219,38 +248,3 @@ const EditableGridInner = (props: Props) => {
     </Grid>
   );
 };
-
-function HitArea(props: {
-  name: string;
-  onDragStart: any;
-  onDragEnd: any;
-  onDrag: any;
-  color?: string;
-}) {
-  return (
-    <div
-      style={{
-        gridArea: props.name,
-        width: "100%",
-        height: "100%",
-        outline: "1px solid white",
-        boxSizing: "border-box",
-        backgroundColor: props.color || "gray"
-      }}
-    >
-      {/* Transparent draggable target */}
-      <div
-        onDragStart={props.onDragStart}
-        onDragEnd={props.onDragEnd}
-        onDrag={props.onDrag}
-        draggable
-        style={{
-          opacity: 0,
-          cursor: "grab",
-          width: "100%",
-          height: "100%"
-        }}
-      />
-    </div>
-  );
-}

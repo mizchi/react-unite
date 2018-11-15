@@ -2,20 +2,28 @@ import "./elements";
 
 import React, { useRef, useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { EditableGrid, GridArea, pixelToNumber } from "../src";
+import { EditableGrid, GridArea, pixelToNumber, GridData } from "../src";
 
 const root = document.querySelector(".root");
+const columns = ["1fr", "1.5fr"];
 const rows = ["40px", "1fr", "1fr"];
-const columns = ["1fr", "1fr"];
 const areas = [
   ["header", "header"],
   ["preview", "inspector"],
   ["assets", "inspector"]
 ];
 
+const intialGridData: GridData = {
+  rows,
+  columns,
+  areas
+};
+
 const UnityEditor = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [width, height] = useWindowSize(ref);
+
+  const [currentGridData, setGridData] = useState(intialGridData);
 
   return (
     <x-view
@@ -30,11 +38,10 @@ const UnityEditor = () => {
         width={pixelToNumber(width)}
         height={pixelToNumber(height)}
         spacerSize={8}
-        rows={rows}
-        columns={columns}
-        areas={areas}
-        // showHorizontal={false}
-        // showVertical={false}
+        onChangeGridData={data => {
+          console.log("data", data);
+        }}
+        {...currentGridData}
       >
         <GridArea name="header">
           <x-pane>header</x-pane>
