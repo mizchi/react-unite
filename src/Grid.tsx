@@ -8,6 +8,7 @@ export type GridProps = {
   width?: string | number;
   height?: string | number;
   style?: any;
+  onDragOver?: any;
 };
 
 export type GridAreaProps = {
@@ -28,6 +29,7 @@ export type GridAreaProps = {
 export const Grid = React.memo(function Grid(props: GridProps) {
   return (
     <div
+      onDragOver={props.onDragOver}
       style={{
         ...props.style,
         display: "grid",

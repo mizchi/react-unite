@@ -44,15 +44,9 @@ export function EditableGrid({
     areas
   };
 
-  const { controllers, ...editable } = buildEditableGridData(
-    original,
-    spacerSize
-  );
-
   return (
     <EditableGridInner
       original={original}
-      controllers={controllers}
       showVertical={showVertical}
       showHorizontal={showHorizontal}
       showCrossPoint={showCrossPoint}
@@ -67,7 +61,6 @@ export function EditableGrid({
 
 type InnerProps = {
   original: GridData;
-  controllers: GridControllers;
   children: any;
   spacerSize: number;
   showVertical: boolean;
@@ -95,7 +88,6 @@ const EditableGridInner = ({
   showHorizontal,
   showVertical,
   hideOnResize,
-  controllers,
   onChangeGridData
 }: InnerProps) => {
   // state
@@ -105,7 +97,7 @@ const EditableGridInner = ({
     original.columns
   );
 
-  const editable = buildEditableGridData(
+  const { controllers, ...editable } = buildEditableGridData(
     {
       rows: semanticRows,
       columns: semanticColumns,
@@ -119,6 +111,7 @@ const EditableGridInner = ({
   const onDragStartFactory = (type: "v" | "h" | "c", i: number, j: number) => (
     ev: any
   ) => {
+    ev.dataTransfer.effectAllowed = "move";
     setHolding({
       type,
       row: i,
@@ -202,7 +195,15 @@ const EditableGridInner = ({
   const showChildren = hideOnResize && holding;
 
   return (
-    <Grid {...editable}>
+    <Grid
+      {...editable}
+      style={{
+        cursor: holding ? "grabbing" : "auto"
+      }}
+      onDragOver={(ev: any) => {
+        holding && ev.preventDefault();
+      }}
+    >
       {!showChildren && children}
 
       {/* show controllers */}

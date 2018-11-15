@@ -1,4 +1,5 @@
 import React from "react";
+
 export function HitArea(props: {
   name: string;
   onDragStart: any;
@@ -17,19 +18,32 @@ export function HitArea(props: {
         backgroundColor: props.color || "gray"
       }}
     >
-      {/* Transparent draggable target */}
-      <div
+      <TranparentHitRegion
         onDragStart={props.onDragStart}
         onDragEnd={props.onDragEnd}
         onDrag={props.onDrag}
-        draggable
-        style={{
-          opacity: 0,
-          cursor: "grab",
-          width: "100%",
-          height: "100%"
-        }}
       />
     </div>
+  );
+}
+
+function TranparentHitRegion(props: {
+  onDragStart: any;
+  onDragEnd: any;
+  onDrag: any;
+}) {
+  return (
+    <div
+      onDragStart={props.onDragStart}
+      onDragEnd={props.onDragEnd}
+      onDrag={props.onDrag}
+      draggable
+      style={{
+        opacity: 0,
+        cursor: "grab",
+        width: "100%",
+        height: "100%"
+      }}
+    />
   );
 }

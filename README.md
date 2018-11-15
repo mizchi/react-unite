@@ -2,6 +2,7 @@
 
 ## TODO
 
+- [ ] Layout mode
 - [ ] Publish
 - [ ] Join grids and hide controller
 

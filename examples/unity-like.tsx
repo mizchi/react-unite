@@ -1,6 +1,5 @@
 import "./elements";
-
-import React, { useRef, useLayoutEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import {
   EditableGrid,
@@ -9,90 +8,86 @@ import {
   GridData,
   pixelsToFractions
 } from "../src";
+import { WindowsContainer, Fullscreen } from "./components";
 
-const root = document.querySelector(".root");
-const columns = ["1fr", "1.5fr"];
-const rows = ["40px", "1fr", "1fr"];
-const areas = [
-  ["header", "header"],
-  ["preview", "inspector"],
-  ["assets", "inspector"]
-];
+const initialGridData: GridData = {
+  rows: ["40px", "1fr", "1fr"],
+  columns: ["1fr", "1fr"],
+  areas: [
+    ["header", "header"],
+    ["preview", "inspector"],
+    ["assets", "inspector"]
+  ]
+};
 
-const intialGridData: GridData = {
-  rows,
-  columns,
-  areas
+const initialLayoutData = {
+  windows: [
+    {
+      id: "preview",
+      displayName: "Preview",
+      selectedId: "#scene",
+      tabs: [{ displayName: "Scene", id: "#scene" }]
+    },
+    {
+      id: "assets",
+      displayName: "Preview",
+      selectedId: "#project",
+      tabs: [
+        { displayName: "Project", id: "#project" },
+        { displayName: "Hierachy", id: "#hierachy" }
+      ]
+    },
+    {
+      id: "inspector",
+      displayName: "Inspector",
+      selectedId: "#inspector",
+      tabs: [
+        { displayName: "Inspector", id: "#inspector" },
+        { displayName: "Services", id: "#services" }
+      ]
+    }
+  ]
 };
 
 const UnityEditor = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [width, height] = useWindowSize(ref);
-
-  const [currentGridData, setGridData] = useState(intialGridData);
-
+  const [currentGridData, setGridData] = useState(initialGridData);
+  const [currentLayoutData, _setLayoutData] = useState(initialLayoutData);
   return (
-    <x-view
-      ref={ref}
-      style={{
-        width: "100vw",
-        height: "100vh"
-      }}
-    >
-      <EditableGrid
-        key={`${width}-${height}`}
-        width={pixelToNumber(width)}
-        height={pixelToNumber(height)}
-        spacerSize={8}
-        onChangeGridData={data => {
-          // console.log("data", data);
-          const compiled = {
-            ...data,
-            rows: pixelsToFractions(data.rows),
-            columns: pixelsToFractions(data.columns)
-          };
-          // console.log("compiled", compiled);
-          setGridData(compiled);
-        }}
-        {...currentGridData}
-      >
-        <GridArea name="header">
-          <x-pane>header</x-pane>
-        </GridArea>
-        <GridArea name="inspector">
-          <x-pane>inspector</x-pane>
-        </GridArea>
-        <GridArea name="preview">
-          <x-pane>preivew</x-pane>
-        </GridArea>
-        <GridArea name="assets">
-          <x-pane>assets</x-pane>
-        </GridArea>
-      </EditableGrid>
-    </x-view>
+    <Fullscreen>
+      {(width, height) => (
+        <EditableGrid
+          key={`${width}-${height}`}
+          width={pixelToNumber(width)}
+          height={pixelToNumber(height)}
+          spacerSize={8}
+          onChangeGridData={data => {
+            const compiled = {
+              ...data,
+              rows: pixelsToFractions(data.rows),
+              columns: pixelsToFractions(data.columns)
+            };
+            setGridData(compiled);
+          }}
+          {...currentGridData}
+        >
+          {currentLayoutData.windows.map(win => {
+            return (
+              <GridArea name={win.id} key={win.id}>
+                <WindowsContainer
+                  tabs={win.tabs}
+                  selectedId={win.selectedId}
+                  onSelectTab={(event, id) => {
+                    console.log("select");
+                  }}
+                />
+              </GridArea>
+            );
+          })}
+        </EditableGrid>
+      )}
+    </Fullscreen>
   );
 };
 
+const root = document.querySelector(".root");
 ReactDOM.render(<UnityEditor />, root);
-
-function useWindowSize(ref: React.RefObject<HTMLDivElement>): [string, string] {
-  const [state, setState] = useState<[string, string]>([
-    window.innerWidth,
-    window.innerHeight
-  ] as any);
-
-  useLayoutEffect(() => {
-    if (ref.current) {
-      const s = window.getComputedStyle(ref.current);
-      setState([s.width, s.height] as any);
-    }
-
-    const onresize = () => {
-      setState([window.innerWidth, window.innerHeight] as any);
-    };
-    window.addEventListener("resize", onresize);
-    return () => window.removeEventListener("resize", onresize);
-  }, []);
-
-  return state;
-}
