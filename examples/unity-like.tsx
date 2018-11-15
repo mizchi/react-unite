@@ -8,7 +8,7 @@ import {
   GridData,
   pixelsToFractions
 } from "../src";
-import { WindowsContainer, Fullscreen } from "./components";
+import { Window, Fullscreen } from "./components";
 
 const initialGridData: GridData = {
   rows: ["40px", "1fr", "1fr"],
@@ -50,8 +50,8 @@ const initialLayoutData = {
 };
 
 const UnityEditor = () => {
-  const [currentGridData, setGridData] = useState(initialGridData);
-  const [currentLayoutData, _setLayoutData] = useState(initialLayoutData);
+  const [grid, setGrid] = useState(initialGridData);
+  const [layout, setLayout] = useState(initialLayoutData);
   return (
     <Fullscreen>
       {(width, height) => (
@@ -66,18 +66,29 @@ const UnityEditor = () => {
               rows: pixelsToFractions(data.rows),
               columns: pixelsToFractions(data.columns)
             };
-            setGridData(compiled);
+            setGrid(compiled);
           }}
-          {...currentGridData}
+          {...grid}
         >
-          {currentLayoutData.windows.map(win => {
+          {layout.windows.map(win => {
             return (
               <GridArea name={win.id} key={win.id}>
-                <WindowsContainer
+                <Window
+                  id={win.id}
                   tabs={win.tabs}
                   selectedId={win.selectedId}
-                  onSelectTab={(event, id) => {
-                    console.log("select");
+                  onSelectTab={(_event, winId, tabId) => {
+                    const newWindows = layout.windows.map(win => {
+                      if (win.id === winId) {
+                        return { ...win, selectedId: tabId };
+                      } else {
+                        return win;
+                      }
+                    });
+                    setLayout({ ...layout, windows: newWindows });
+                  }}
+                  renderContent={id => {
+                    return <x-pane>{id}</x-pane>;
                   }}
                 />
               </GridArea>

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from "react";
+import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
 
 export type WindowData = {
   id: string;
@@ -9,6 +9,9 @@ function TabButton(props: {
   displayName: string;
   selected?: boolean;
   onClick: (event: Event) => void;
+  onDragStart?: (ev: DragEvent) => void;
+  onDragEnd?: (ev: DragEvent) => void;
+  onDrop?: (ev: DragEvent) => void;
 }) {
   return (
     <x-pane
@@ -41,18 +44,17 @@ function TabSelector(props: {
   tabs: Array<{ displayName: string; id: string; icon?: string }>;
   selectedId: string;
   onSelectTab: (ev: Event, id: string) => void;
+  onDragStartTab?: (ev: Event, id: string) => void;
+  onDragEndTab?: (ev: Event, id: string) => void;
+  onDropTab?: (ev: Event, id: string) => void;
+  onDropped?: (ev: Event, id: string) => void;
 }) {
   return (
     <x-view
       onDragEnter={ev => {
-        ev.preventDefault();
         console.log("enter target");
-        ev.dataTransfer.dropEffect = "move";
       }}
       onDragLeave={ev => {
-        ev.preventDefault();
-
-        ev.dataTransfer.dropEffect = "move";
         console.log("leave target");
       }}
       onDrop={() => {
@@ -79,24 +81,30 @@ function TabSelector(props: {
   );
 }
 
-export function WindowsContainer({
+export function Window({
+  id,
   tabs,
   selectedId,
+  renderContent,
   onSelectTab
 }: {
+  id: string;
   tabs: WindowData[];
   selectedId: string;
-  onSelectTab: (ev: Event, id: string) => void;
+  renderContent: (id: string) => React.ReactNode;
+  onSelectTab: (ev: Event, windowId: string, tabId: string) => void;
 }) {
+  const onSelect = useCallback(
+    (ev: any, tabId: string) => {
+      onSelectTab(ev, id, tabId);
+    },
+    [id]
+  );
   return (
     <x-pane style={{ flexDirection: "column" }}>
-      <TabSelector
-        tabs={tabs}
-        selectedId={selectedId}
-        onSelectTab={onSelectTab}
-      />
+      <TabSelector tabs={tabs} selectedId={selectedId} onSelectTab={onSelect} />
       <x-pane style={{ flex: 1, background: "white" }}>
-        <x-pane>body</x-pane>
+        {renderContent(selectedId)}
       </x-pane>
     </x-pane>
   );
