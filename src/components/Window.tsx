@@ -22,13 +22,26 @@ export function Window({
       onDropTab(tabId)(ev);
     }
   };
+  const onDragOver = (ev: DragEvent) => {
+    ev.preventDefault();
+  };
+
+  const onDragStartTab = (tabId: string) => (ev: DragEvent) => {
+    if (ev.dataTransfer) {
+      ev.dataTransfer.effectAllowed = "drop";
+      ev.dataTransfer.setData("text", tabId);
+    }
+  };
+
   return (
     <x-pane style={{ flexDirection: "column" }}>
       <WindowTabSelector
         tabs={tabs}
         selectedId={selectedId}
-        onSelectTab={onSelectTab}
+        onDragOver={onDragOver}
         onDrop={onDrop}
+        onSelectTab={onSelectTab}
+        onDragStartTab={onDragStartTab}
       />
       <x-pane style={{ flex: 1, background: "white", overflowY: "scroll" }}>
         {renderContent(selectedId)}
