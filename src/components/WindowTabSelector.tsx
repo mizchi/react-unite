@@ -12,19 +12,14 @@ export function WindowTabSelector(props: {
 }) {
   return (
     <x-view
-      // onDragEnter={ev => {
-      //   console.log("enter target");
-      // }}
-      // onDragLeave={ev => {
-      //   console.log("leave target");
-      // }}
       onDragOver={ev => {
         ev.preventDefault();
       }}
       onDrop={props.onDrop as any}
       style={{
         height: 30,
-        backgroundColor: "wheat",
+        alignItems: "left",
+        backgroundColor: "#aaa",
         width: "100%",
         flexDirection: "row"
       }}

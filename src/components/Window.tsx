@@ -1,6 +1,7 @@
 import React from "react";
 import { TabData } from "../types";
 import { WindowTabSelector } from "./WindowTabSelector";
+
 export function Window({
   tabs,
   selectedId,
@@ -29,7 +30,7 @@ export function Window({
         onSelectTab={onSelectTab}
         onDrop={onDrop}
       />
-      <x-pane style={{ flex: 1, background: "white" }}>
+      <x-pane style={{ flex: 1, background: "white", overflowY: "scroll" }}>
         {renderContent(selectedId)}
       </x-pane>
     </x-pane>

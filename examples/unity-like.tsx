@@ -13,6 +13,7 @@ import {
 } from "../src";
 
 const initialGridData: GridData = {
+  // rowsResizables: [false, true, true],
   rows: ["40px", "1fr", "1fr"],
   columns: ["1fr", "1fr"],
   areas: [
@@ -56,8 +57,6 @@ const UnityEditor = () => {
   const tabMap = initialLayoutData.tabMap;
   const [grid, setGrid] = useState(initialGridData);
   const [windows, setWindows] = useState(initialLayoutData.windows);
-
-  console.log("render", windows.map(w => w.tabs.join("-")));
 
   return (
     <Windowed>
@@ -127,6 +126,9 @@ const UnityEditor = () => {
                         <x-view>
                           <h3>LayoutData</h3>
                           <pre>
+                            <code>{JSON.stringify(previewData, null, 2)}</code>
+                            <code>{JSON.stringify(previewData, null, 2)}</code>
+                            <code>{JSON.stringify(previewData, null, 2)}</code>
                             <code>{JSON.stringify(previewData, null, 2)}</code>
                           </pre>
                         </x-view>
