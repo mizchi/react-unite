@@ -6,29 +6,25 @@ export type WindowData = {
 };
 
 function TabButton(props: {
+  id: string;
   displayName: string;
   selected?: boolean;
   onClick: (event: Event) => void;
   onDragStart?: (ev: DragEvent) => void;
   onDragEnd?: (ev: DragEvent) => void;
+  onDrag?: (ev: DragEvent) => void;
   onDrop?: (ev: DragEvent) => void;
 }) {
   return (
     <x-pane
       onClick={props.onClick as any}
       draggable
-      onDragOver={ev => {
-        ev.preventDefault();
-      }}
-      onDragStart={ev => {
-        console.log("on drag start");
-        // ev.dataTransfer.effectAllowed = "move";
-        // ev.dataTransfer.setData("text", "hello");
-      }}
-      onDrop={() => {
-        console.log("dropped tab");
-      }}
+      onDragStart={props.onDragStart as any}
+      onDragEnd={props.onDragEnd as any}
+      onDrag={props.onDrag as any}
+      onDrop={props.onDrop as any}
       style={{
+        borderRight: "1px solid rgba(0,0,0,0.4)",
         minWidth: "50px",
         height: "100%",
         background: props.selected ? "#fff" : "#aaa",
@@ -43,23 +39,24 @@ function TabButton(props: {
 function TabSelector(props: {
   tabs: Array<{ displayName: string; id: string; icon?: string }>;
   selectedId: string;
-  onSelectTab: (ev: Event, id: string) => void;
-  onDragStartTab?: (ev: Event, id: string) => void;
-  onDragEndTab?: (ev: Event, id: string) => void;
-  onDropTab?: (ev: Event, id: string) => void;
-  onDropped?: (ev: Event, id: string) => void;
+  onSelectTab: (id: string) => (ev: Event) => void;
+  // onDragStartTab?: (id: string) => (ev: Event) => void;
+  // onDragEndTab?: (id: string) => (ev: Event) => void;
+  // onDropTab?: (id: string) => (ev: Event) => void;
+  onDrop?: (ev: DragEvent) => void;
 }) {
   return (
     <x-view
-      onDragEnter={ev => {
-        console.log("enter target");
+      // onDragEnter={ev => {
+      //   console.log("enter target");
+      // }}
+      // onDragLeave={ev => {
+      //   console.log("leave target");
+      // }}
+      onDragOver={ev => {
+        ev.preventDefault();
       }}
-      onDragLeave={ev => {
-        console.log("leave target");
-      }}
-      onDrop={() => {
-        console.log("dropped");
-      }}
+      onDrop={props.onDrop as any}
       style={{
         height: 30,
         backgroundColor: "wheat",
@@ -71,9 +68,16 @@ function TabSelector(props: {
         return (
           <TabButton
             key={tab.id}
+            id={tab.id}
             displayName={tab.displayName}
             selected={tab.id === props.selectedId}
-            onClick={ev => props.onSelectTab(ev, tab.id)}
+            onClick={props.onSelectTab(tab.id)}
+            onDragStart={ev => {
+              if (ev.dataTransfer) {
+                ev.dataTransfer.effectAllowed = "drop";
+                ev.dataTransfer.setData("text", tab.id);
+              }
+            }}
           />
         );
       })}
@@ -86,23 +90,31 @@ export function Window({
   tabs,
   selectedId,
   renderContent,
-  onSelectTab
+  onSelectTab,
+  onDropTab
 }: {
   id: string;
   tabs: WindowData[];
   selectedId: string;
   renderContent: (id: string) => React.ReactNode;
-  onSelectTab: (ev: Event, windowId: string, tabId: string) => void;
+  onSelectTab: (tabId: string) => (ev: Event) => void;
+  onDropTab: (tabId: string) => (ev: DragEvent) => void;
 }) {
-  const onSelect = useCallback(
-    (ev: any, tabId: string) => {
-      onSelectTab(ev, id, tabId);
-    },
-    [id]
-  );
+  const onDrop = useCallback((ev: DragEvent) => {
+    if (ev.dataTransfer) {
+      const tabId = ev.dataTransfer.getData("text");
+      onDropTab(tabId)(ev);
+    }
+  }, []);
+
   return (
     <x-pane style={{ flexDirection: "column" }}>
-      <TabSelector tabs={tabs} selectedId={selectedId} onSelectTab={onSelect} />
+      <TabSelector
+        tabs={tabs}
+        selectedId={selectedId}
+        onSelectTab={onSelectTab}
+        onDrop={onDrop}
+      />
       <x-pane style={{ flex: 1, background: "white" }}>
         {renderContent(selectedId)}
       </x-pane>

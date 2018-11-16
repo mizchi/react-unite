@@ -20,7 +20,23 @@ const initialGridData: GridData = {
   ]
 };
 
-const initialLayoutData = {
+type TabData = {
+  id: string;
+  displayName: string;
+};
+
+type WindowData = {
+  id: string;
+  displayName: string;
+  selectedId: string;
+  tabs: TabData[];
+};
+
+type LayoutData = {
+  windows: WindowData[];
+};
+
+const initialLayoutData: LayoutData = {
   windows: [
     {
       id: "preview",
@@ -52,6 +68,7 @@ const initialLayoutData = {
 const UnityEditor = () => {
   const [grid, setGrid] = useState(initialGridData);
   const [layout, setLayout] = useState(initialLayoutData);
+
   return (
     <Fullscreen>
       {(width, height) => (
@@ -71,15 +88,38 @@ const UnityEditor = () => {
           {...grid}
         >
           {layout.windows.map(win => {
+            const onDropTab = (tabId: string) => (ev: DragEvent) => {
+              console.log("dropped", win.id, "-", tabId);
+              const targetTab = layout.windows
+                .map(w => w.tabs)
+                .reduce((acc, tabs) => [...acc, ...tabs], [])
+                .find(tab => tab.id === tabId);
+
+              if (targetTab) {
+                const newWindows = layout.windows.map(w => {
+                  if (w.id === win.id) {
+                    // add
+                    const tabs = [...w.tabs, targetTab];
+                    return { ...w, tabs };
+                  } else {
+                    const removedTabs = w.tabs.filter(tab => tab.id !== tabId);
+                    return { ...w, tabs: removedTabs };
+                  }
+                });
+
+                setLayout({ ...layout, windows: newWindows } as any);
+              }
+            };
+
             return (
               <GridArea name={win.id} key={win.id}>
                 <Window
                   id={win.id}
                   tabs={win.tabs}
                   selectedId={win.selectedId}
-                  onSelectTab={(_event, winId, tabId) => {
+                  onSelectTab={tabId => _ev => {
                     const newWindows = layout.windows.map(win => {
-                      if (win.id === winId) {
+                      if (win.id === win.id) {
                         return { ...win, selectedId: tabId };
                       } else {
                         return win;
@@ -87,6 +127,7 @@ const UnityEditor = () => {
                     });
                     setLayout({ ...layout, windows: newWindows });
                   }}
+                  onDropTab={onDropTab}
                   renderContent={id => {
                     return <x-pane>{id}</x-pane>;
                   }}
