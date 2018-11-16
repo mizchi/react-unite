@@ -8,7 +8,7 @@ import {
   GridData,
   pixelsToFractions,
   Window,
-  Fullscreen,
+  Windowed,
   LayoutData
 } from "../src";
 
@@ -60,7 +60,7 @@ const UnityEditor = () => {
   console.log("render", windows.map(w => w.tabs.join("-")));
 
   return (
-    <Fullscreen>
+    <Windowed>
       {(width, height) => (
         <EditableGrid
           key={`${width}-${height}`}
@@ -140,7 +140,7 @@ const UnityEditor = () => {
           })}
         </EditableGrid>
       )}
-    </Fullscreen>
+    </Windowed>
   );
 };
 

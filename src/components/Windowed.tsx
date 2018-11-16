@@ -1,5 +1,7 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
-export function Fullscreen(props: {
+
+// TODO: Research AutoSizer
+export function Windowed(props: {
   children: (width: string, height: string) => React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -16,6 +18,7 @@ export function Fullscreen(props: {
     </x-view>
   );
 }
+
 function useWindowSize(ref: React.RefObject<HTMLDivElement>): [string, string] {
   const [state, setState] = useState<[string, string]>([
     window.innerWidth,
