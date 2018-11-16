@@ -14,3 +14,22 @@ export type GridControllers = {
   crosses: [number, number][];
   idxMap: { [key: string]: string };
 };
+
+export type TabData = {
+  id: string;
+  displayName: string;
+};
+
+export type LayoutData = {
+  windows: WindowData[];
+  tabMap: {
+    [key: string]: TabData;
+  };
+};
+
+export type WindowData = {
+  id: string;
+  displayName: string;
+  selectedId: string;
+  tabs: string[];
+};

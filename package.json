@@ -5,6 +5,7 @@
     "dev": "parcel examples/index.html --open",
     "build": "parcel build examples/index.html",
     "test": "jest",
+    "test:types": "tsc . --noEmit",
     "deploy": "netlify deploy -d dist --prod"
   },
   "devDependencies": {

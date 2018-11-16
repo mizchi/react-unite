@@ -1,4 +1,4 @@
-import "./elements";
+import "./elements/index";
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import {
@@ -6,9 +6,11 @@ import {
   GridArea,
   pixelToNumber,
   GridData,
-  pixelsToFractions
+  pixelsToFractions,
+  Window,
+  Fullscreen,
+  LayoutData
 } from "../src";
-import { Window, Fullscreen, LayoutData } from "./components";
 
 const initialGridData: GridData = {
   rows: ["40px", "1fr", "1fr"],

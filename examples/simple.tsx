@@ -4,28 +4,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { EditableGrid, Grid, GridArea } from "../src";
 
-// --- components
-
-function DummyPane() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-        padding: "10px",
-        border: "3px solid white",
-        boxSizing: "border-box",
-        backgroundColor: "rgba(0, 128, 0, 0.4)"
-      }}
-    >
-      Dummy Pane
-    </div>
-  );
-}
-
 const root = document.querySelector(".root");
 const rows = ["1fr", "2fr", "1fr"];
 const columns = ["100px", "1fr", "1fr", "100px"];
@@ -50,22 +28,22 @@ ReactDOM.render(
       areas={areas}
     >
       <GridArea name="a">
-        <x-pane>A</x-pane>
+        <x-pane>a</x-pane>
       </GridArea>
       <GridArea name="b">
-        <DummyPane />
+        <x-pane>b</x-pane>
       </GridArea>
       <GridArea name="d">
-        <DummyPane />
+        <x-pane>d</x-pane>
       </GridArea>
       <GridArea name="f">
-        <DummyPane />
+        <x-pane>f</x-pane>
       </GridArea>
       <GridArea name="h">
-        <DummyPane />
+        <x-pane>h</x-pane>
       </GridArea>
       <GridArea name="l">
-        <DummyPane />
+        <x-pane>l</x-pane>
       </GridArea>
     </EditableGrid>
     <hr />
@@ -79,22 +57,22 @@ ReactDOM.render(
       areas={areas}
     >
       <GridArea name="a">
-        <DummyPane />
+        <x-pane>a</x-pane>
       </GridArea>
       <GridArea name="b">
-        <DummyPane />
+        <x-pane>b</x-pane>
       </GridArea>
       <GridArea name="d">
-        <DummyPane />
+        <x-pane>d</x-pane>
       </GridArea>
       <GridArea name="f">
-        <DummyPane />
+        <x-pane>f</x-pane>
       </GridArea>
       <GridArea name="h">
-        <DummyPane />
+        <x-pane>h</x-pane>
       </GridArea>
       <GridArea name="l">
-        <DummyPane />
+        <x-pane>l</x-pane>
       </GridArea>
     </Grid>
   </>,
