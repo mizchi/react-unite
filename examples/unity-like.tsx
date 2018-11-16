@@ -8,7 +8,13 @@ import {
   GridData,
   pixelsToFractions
 } from "../src";
-import { Window, Fullscreen } from "./components";
+import {
+  Window,
+  Fullscreen,
+  WindowData,
+  TabData,
+  LayoutData
+} from "./components";
 
 const initialGridData: GridData = {
   rows: ["40px", "1fr", "1fr"],
@@ -20,47 +26,32 @@ const initialGridData: GridData = {
   ]
 };
 
-type TabData = {
-  id: string;
-  displayName: string;
-};
-
-type WindowData = {
-  id: string;
-  displayName: string;
-  selectedId: string;
-  tabs: TabData[];
-};
-
-type LayoutData = {
-  windows: WindowData[];
-};
-
 const initialLayoutData: LayoutData = {
+  tabMap: {
+    "#scene": { displayName: "Scene", id: "#scene" },
+    "#project": { displayName: "Project", id: "#project" },
+    "#hierachy": { displayName: "Hierachy", id: "#hierachy" },
+    "#inspector": { displayName: "Inspector", id: "#inspector" },
+    "#services": { displayName: "Services", id: "#services" }
+  },
   windows: [
     {
       id: "preview",
       displayName: "Preview",
       selectedId: "#scene",
-      tabs: [{ displayName: "Scene", id: "#scene" }]
+      tabs: ["#scene"]
     },
     {
       id: "assets",
       displayName: "Preview",
       selectedId: "#project",
-      tabs: [
-        { displayName: "Project", id: "#project" },
-        { displayName: "Hierachy", id: "#hierachy" }
-      ]
+      tabs: ["#project", "#hierachy"]
     },
     {
       id: "inspector",
       displayName: "Inspector",
       selectedId: "#inspector",
-      tabs: [
-        { displayName: "Inspector", id: "#inspector" },
-        { displayName: "Services", id: "#services" }
-      ]
+      tabs: ["#inspector", "#services"]
     }
   ]
 };
@@ -93,36 +84,37 @@ const UnityEditor = () => {
               const targetTab = layout.windows
                 .map(w => w.tabs)
                 .reduce((acc, tabs) => [...acc, ...tabs], [])
-                .find(tab => tab.id === tabId);
-
+                .find(t => t === tabId);
               if (targetTab) {
+                // TODO: Buggy
                 const newWindows = layout.windows.map(w => {
                   if (w.id === win.id) {
                     // add
-                    const tabs = [...w.tabs, targetTab];
+                    const tabs = w.tabs.includes(targetTab)
+                      ? w.tabs
+                      : [...w.tabs, targetTab];
                     return { ...w, tabs };
                   } else {
-                    const removedTabs = w.tabs.filter(tab => tab.id !== tabId);
+                    const removedTabs = w.tabs.filter(t => t !== tabId);
                     return { ...w, tabs: removedTabs };
                   }
                 });
-
                 setLayout({ ...layout, windows: newWindows } as any);
               }
             };
-
+            const tabs = win.tabs.map(tid => layout.tabMap[tid]);
             return (
               <GridArea name={win.id} key={win.id}>
                 <Window
                   id={win.id}
-                  tabs={win.tabs}
+                  tabs={tabs}
                   selectedId={win.selectedId}
                   onSelectTab={tabId => _ev => {
-                    const newWindows = layout.windows.map(win => {
-                      if (win.id === win.id) {
-                        return { ...win, selectedId: tabId };
+                    const newWindows = layout.windows.map(w => {
+                      if (win.id === w.id) {
+                        return { ...w, selectedId: tabId };
                       } else {
-                        return win;
+                        return w;
                       }
                     });
                     setLayout({ ...layout, windows: newWindows });

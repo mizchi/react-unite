@@ -1,8 +1,20 @@
 import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
 
+export type TabData = {
+  id: string;
+  displayName: string;
+};
+
 export type WindowData = {
   id: string;
   displayName: string;
+  selectedId: string;
+  tabs: string[];
+};
+
+export type LayoutData = {
+  windows: WindowData[];
+  tabMap: { [key: string]: TabData };
 };
 
 function TabButton(props: {
@@ -94,7 +106,7 @@ export function Window({
   onDropTab
 }: {
   id: string;
-  tabs: WindowData[];
+  tabs: TabData[];
   selectedId: string;
   renderContent: (id: string) => React.ReactNode;
   onSelectTab: (tabId: string) => (ev: Event) => void;
