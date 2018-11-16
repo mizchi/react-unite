@@ -8,13 +8,7 @@ import {
   GridData,
   pixelsToFractions
 } from "../src";
-import {
-  Window,
-  Fullscreen,
-  WindowData,
-  TabData,
-  LayoutData
-} from "./components";
+import { Window, Fullscreen, LayoutData } from "./components";
 
 const initialGridData: GridData = {
   rows: ["40px", "1fr", "1fr"],
@@ -57,8 +51,11 @@ const initialLayoutData: LayoutData = {
 };
 
 const UnityEditor = () => {
+  const tabMap = initialLayoutData.tabMap;
   const [grid, setGrid] = useState(initialGridData);
-  const [layout, setLayout] = useState(initialLayoutData);
+  const [windows, setWindows] = useState(initialLayoutData.windows);
+
+  console.log("render", windows.map(w => w.tabs.join("-")));
 
   return (
     <Fullscreen>
@@ -78,31 +75,27 @@ const UnityEditor = () => {
           }}
           {...grid}
         >
-          {layout.windows.map(win => {
-            const onDropTab = (tabId: string) => (ev: DragEvent) => {
-              console.log("dropped", win.id, "-", tabId);
-              const targetTab = layout.windows
-                .map(w => w.tabs)
-                .reduce((acc, tabs) => [...acc, ...tabs], [])
-                .find(t => t === tabId);
-              if (targetTab) {
-                // TODO: Buggy
-                const newWindows = layout.windows.map(w => {
-                  if (w.id === win.id) {
-                    // add
-                    const tabs = w.tabs.includes(targetTab)
-                      ? w.tabs
-                      : [...w.tabs, targetTab];
-                    return { ...w, tabs };
-                  } else {
-                    const removedTabs = w.tabs.filter(t => t !== tabId);
-                    return { ...w, tabs: removedTabs };
+          {windows.map(win => {
+            const onDropTab = (tabId: string) => (_ev: DragEvent) => {
+              const newWindows = windows.map(w => {
+                let tabs = w.tabs;
+                let selectedId = w.selectedId;
+                if (w.id === win.id) {
+                  tabs = w.tabs.includes(tabId) ? w.tabs : [...w.tabs, tabId];
+                  selectedId = tabId;
+                } else {
+                  tabs = w.tabs.filter(t => t !== tabId);
+                  if (tabId === w.selectedId) {
+                    selectedId = tabs[0];
                   }
-                });
-                setLayout({ ...layout, windows: newWindows } as any);
-              }
+                }
+                return { ...w, tabs, selectedId };
+              });
+
+              // debugger;
+              setWindows(newWindows);
             };
-            const tabs = win.tabs.map(tid => layout.tabMap[tid]);
+            const tabs = win.tabs.map(tid => tabMap[tid]);
             return (
               <GridArea name={win.id} key={win.id}>
                 <Window
@@ -110,17 +103,33 @@ const UnityEditor = () => {
                   tabs={tabs}
                   selectedId={win.selectedId}
                   onSelectTab={tabId => _ev => {
-                    const newWindows = layout.windows.map(w => {
+                    const newWindows = windows.map(w => {
                       if (win.id === w.id) {
                         return { ...w, selectedId: tabId };
                       } else {
                         return w;
                       }
                     });
-                    setLayout({ ...layout, windows: newWindows });
+                    setWindows(newWindows);
                   }}
                   onDropTab={onDropTab}
                   renderContent={id => {
+                    if (id === "#inspector") {
+                      const previewData = {
+                        tabs: windows.map(w => w.tabs.join("-")),
+                        areas: grid.areas,
+                        rows: grid.rows,
+                        columns: grid.columns
+                      };
+                      return (
+                        <x-view>
+                          <h3>LayoutData</h3>
+                          <pre>
+                            <code>{JSON.stringify(previewData, null, 2)}</code>
+                          </pre>
+                        </x-view>
+                      );
+                    }
                     return <x-pane>{id}</x-pane>;
                   }}
                 />

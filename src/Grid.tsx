@@ -51,7 +51,8 @@ export const GridArea = React.memo(function GridArea(props: GridAreaProps) {
   return (
     <div
       style={{
-        gridArea: props.name
+        gridArea: props.name,
+        overflow: "auto"
       }}
     >
       {props.children}

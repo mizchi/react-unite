@@ -49,7 +49,7 @@ function TabButton(props: {
 }
 
 function TabSelector(props: {
-  tabs: Array<{ displayName: string; id: string; icon?: string }>;
+  tabs: Array<TabData>;
   selectedId: string;
   onSelectTab: (id: string) => (ev: Event) => void;
   // onDragStartTab?: (id: string) => (ev: Event) => void;
@@ -112,12 +112,12 @@ export function Window({
   onSelectTab: (tabId: string) => (ev: Event) => void;
   onDropTab: (tabId: string) => (ev: DragEvent) => void;
 }) {
-  const onDrop = useCallback((ev: DragEvent) => {
+  const onDrop = (ev: DragEvent) => {
     if (ev.dataTransfer) {
       const tabId = ev.dataTransfer.getData("text");
       onDropTab(tabId)(ev);
     }
-  }, []);
+  };
 
   return (
     <x-pane style={{ flexDirection: "column" }}>
