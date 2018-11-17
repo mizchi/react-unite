@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Window } from "./Window";
+import { Container } from "./Container";
 import { GridArea } from "./Grid";
 import { pixelToNumber, pixelsToFractions } from "../helpers";
 import { EditableGrid } from "./EditableGrid";
@@ -55,7 +55,7 @@ export function EditableWindowContainer(props: {
         const tabs = win.tabs.map(tid => tabMap[tid]);
         return (
           <GridArea name={win.id} key={win.id}>
-            <Window
+            <Container
               id={win.id}
               tabs={tabs}
               selectedId={win.selectedId}

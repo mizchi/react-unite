@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { WindowData } from "../types";
 import { WindowTabSelector } from "./WindowTabSelector";
 
-export function Window({
+export function Container({
   id,
   tabs,
   selectedId,
