@@ -1,11 +1,11 @@
 import { interpose, numberToPixel } from "./helpers";
-import { EditbalGridData, GridControllers, GridData } from "./types";
+import { EditbalGridData, GridData, Controllers } from "./types";
 
 export function buildEditableGridData(
   original: GridData,
   spacerSize = 16
 ): EditbalGridData {
-  const controllers: GridControllers = {
+  const controllers: Controllers = {
     verticals: [],
     horizontals: [],
     crosses: [],

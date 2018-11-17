@@ -5,7 +5,7 @@ export type GridData = {
 };
 
 export type EditbalGridData = GridData & {
-  controllers: GridControllers;
+  controllers: Controllers;
 };
 
 export type TabData = {
@@ -14,20 +14,20 @@ export type TabData = {
 };
 
 export type LayoutData = {
-  containers: WindowData[];
+  containers: ContainerData[];
   tabMap: {
     [key: string]: TabData;
   };
 };
 
-export type WindowData = {
+export type ContainerData = {
   id: string;
   displayName: string;
   selectedId: string;
   tabs: string[];
 };
 
-type GridControllers = {
+export type Controllers = {
   verticals: [number, number][];
   horizontals: [number, number][];
   crosses: [number, number][];
