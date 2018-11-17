@@ -43,22 +43,22 @@ ReactDOM.render(
     areas={areas}
   >
     <GridArea name="a">
-      <x-pane>a</x-pane>
+      <div>a</div>
     </GridArea>
     <GridArea name="b">
-      <x-pane>b</x-pane>
+      <div>b</div>
     </GridArea>
     <GridArea name="d">
-      <x-pane>d</x-pane>
+      <div>d</div>
     </GridArea>
     <GridArea name="f">
-      <x-pane>f</x-pane>
+      <div>f</div>
     </GridArea>
     <GridArea name="h">
-      <x-pane>h</x-pane>
+      <div>h</div>
     </GridArea>
     <GridArea name="l">
-      <x-pane>l</x-pane>
+      <div>l</div>
     </GridArea>
   </EditableGrid>,
   root
@@ -125,9 +125,9 @@ const MyLayout = () => {
           }}
           renderWindow={win => {
             return (
-              <x-pane>
+              <div>
                 {win.id}: {win.displayName}
-              </x-pane>
+              </div>
             );
           }}
         />
@@ -164,7 +164,7 @@ export const Grid: React.ComponentClass<GridProps> = styled.div`
 
 - [x] Publish
 - [x] Swap window on drop
-- [x] Remove x-pane in src
+- [x] Remove div in src
 - [x] `renderTab`
 - [x] Visual Effect on dragStart and dragEnd
 - [x] Fill Component
