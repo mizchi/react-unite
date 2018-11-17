@@ -12,6 +12,7 @@ export function EditableLayout(props: {
   height: number | string;
   layout: LayoutData;
   renderWindow: (data: WindowData) => React.ReactNode;
+  renderTab: (data: WindowData) => React.ReactNode;
   onChangeLayout?: (data: LayoutData) => void;
 }) {
   // State
@@ -39,7 +40,7 @@ export function EditableLayout(props: {
     ev: DragEvent
   ) => {
     if (ev.dataTransfer) {
-      ev.dataTransfer.effectAllowed = "drop";
+      ev.dataTransfer.effectAllowed = "move";
       ev.dataTransfer.setData("text", windowId);
       setDragContext({
         containerId,
@@ -92,6 +93,7 @@ export function EditableLayout(props: {
               <Container
                 containerId={container.id}
                 windows={windows}
+                renderTab={props.renderTab}
                 selectedId={container.selectedId || null}
                 onSelectTab={onSelectTab(container.id)}
                 onDragStartWindow={onDragStartWindow}

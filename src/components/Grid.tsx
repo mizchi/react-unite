@@ -35,6 +35,7 @@ export const Grid = React.memo(function Grid(props: GridProps) {
         display: "grid",
         width: props.width || "100%",
         height: props.height || "100%",
+        overflow: "hidden",
         gridTemplateColumns: props.columns.join(" "),
         gridTemplateRows: props.rows.join(" "),
         gridTemplateAreas: props.areas

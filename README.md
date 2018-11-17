@@ -1,21 +1,28 @@
-# EditableLayout
+# react-unite
 
-WIP
+Editable Grid & Layout
 
-## TODO
+![](https://i.gyazo.com/a4781fc08dd2dd96b0db5aea61563d57.gif)
 
-- [ ] Swap window on drop
-- [ ] resizableRows|Columns option
-- [ ] Resizable Box
-- [ ] Quit x-pane in src
-- [ ] Publish
+```
+yarn add react-unite
+```
 
-## How to use
+CAUTION: `react-unite` require `react@16.7.0-alpha.0` & `react-dom@16.7.0-alpha.0` to use react-hooks.
+
+## Concept
+
+- inspired by Unity3D layout system
+- `react-unite` generates `display: grid` properties.
+
+See also https://mizchi-sandbox.github.io/grid-generator/
+
+## EditableGrid (typescript)
 
 ```tsx
 import React from "react";
 import ReactDOM from "react-dom";
-import { EditableGrid, GridArea } from "../src";
+import { EditableGrid, GridArea } from "react-unite";
 
 const rows = ["1fr", "2fr", "1fr"];
 const columns = ["100px", "1fr", "1fr", "100px"];
@@ -58,16 +65,87 @@ ReactDOM.render(
 );
 ```
 
-[demo](https://admiring-curie-8355d7.netlify.com)
+## EditableLayout (typescript)
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom";
+import { LayoutData, Windowed, EditableLayout } from "react-unite";
+
+const initialLayoutData: LayoutData = {
+  grid: {
+    columns: ["1fr", "1fr"],
+    rows: ["40px", "1fr", "1fr"],
+    areas: [
+      ["header", "header"],
+      ["preview", "inspector"],
+      ["assets", "inspector"]
+    ]
+  },
+  windowMap: {
+    "#scene": { displayName: "Scene", id: "#scene" },
+    "#project": { displayName: "Project", id: "#project" },
+    "#hierachy": { displayName: "Hierachy", id: "#hierachy" },
+    "#inspector": { displayName: "Inspector", id: "#inspector" },
+    "#services": { displayName: "Services", id: "#services" }
+  },
+  containers: [
+    {
+      id: "preview",
+      displayName: "Preview",
+      selectedId: "#scene",
+      windowIds: ["#scene"]
+    },
+    {
+      id: "assets",
+      displayName: "Preview",
+      selectedId: "#project",
+      windowIds: ["#project", "#hierachy"]
+    },
+    {
+      id: "inspector",
+      displayName: "Inspector",
+      selectedId: "#inspector",
+      windowIds: ["#inspector", "#services"]
+    }
+  ]
+};
+
+// To fill window, Set css `html, body { margin: 0;}`
+const MyLayout = () => {
+  return (
+    <Windowed>
+      {(width, height) => (
+        <EditableLayout
+          width={width}
+          height={height}
+          layout={initialLayoutData}
+          renderTab={data => {
+            return <span>{data.displayName}</span>;
+          }}
+          renderWindow={win => {
+            return (
+              <x-pane>
+                {win.id}: {win.displayName}
+              </x-pane>
+            );
+          }}
+        />
+      )}
+    </Windowed>
+  );
+};
+
+const root = document.querySelector(".root");
+ReactDOM.render(<MyLayout />, root);
+```
 
 ## How to dev
 
-- `yarn dev`: Start application server on `http://localhost:1234`
-- `yarn build`: Generate `dist`
+- `yarn build`: Generate `dist` by rollup
 - `yarn test`: Run jest
-- `yarn deploy`: Deploy to netlify (need netlify account)
 
-## Write your grid renderer
+## Write your own grid renderer
 
 ```tsx
 import styled from "styled-components";
@@ -81,6 +159,22 @@ export const Grid: React.ComponentClass<GridProps> = styled.div`
     p.areas.map(row => "'" + row.join(" ") + "'").join(" ")};
 `;
 ```
+
+## TODO
+
+- [x] Publish
+- [x] Swap window on drop
+- [x] Remove x-pane in src
+- [x] `renderTab`
+- [x] Visual Effect on dragStart and dragEnd
+- [x] Fill Component
+- [ ] `containerType`: one | tabs | nest
+- [ ] ResizableBox
+- [ ] Option: `resizableRows`
+- [ ] Option: `resizableColumns`
+- [ ] Option: `minimumWindowWidth`
+- [ ] Option: `minimumWindowHeight`
+- [ ] Option: `editable: boolean`
 
 ## LICENSE
 

@@ -1,4 +1,5 @@
 import React, { useRef, useState, useLayoutEffect } from "react";
+import { debounce } from "../helpers";
 
 // TODO: Research AutoSizer
 export function Windowed(props: {
@@ -7,7 +8,7 @@ export function Windowed(props: {
   const ref = useRef<HTMLDivElement>(null);
   const [width, height] = useWindowSize(ref);
   return (
-    <x-view
+    <div
       ref={ref}
       style={{
         width: "100vw",
@@ -15,7 +16,7 @@ export function Windowed(props: {
       }}
     >
       {props.children(width, height)}
-    </x-view>
+    </div>
   );
 }
 
@@ -29,9 +30,10 @@ function useWindowSize(ref: React.RefObject<HTMLDivElement>): [string, string] {
       const s = window.getComputedStyle(ref.current);
       setState([s.width, s.height] as any);
     }
-    const onresize = () => {
+    const onresize = debounce(() => {
       setState([window.innerWidth, window.innerHeight] as any);
-    };
+    });
+
     window.addEventListener("resize", onresize);
     return () => window.removeEventListener("resize", onresize);
   }, []);

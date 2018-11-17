@@ -5,4 +5,4 @@ export type DragContextValue = null | {
   containerId: string;
 };
 
-export const DragContext = React.createContext<DragContextValue>(null as any);
+export const DragContext = React.createContext<DragContextValue>(null);

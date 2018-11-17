@@ -1,14 +1,6 @@
-/* === Ignore === */
-
-// declare module "lib-name";
-
 import * as React from "react";
 
 declare module "react" {
-  // Suspense
-  function lazy(loader: () => Promise<any>): React.ComponentType<any>;
-  // const Suspense: React.ComponentType<any>;
-
   // Hooks
   function useState<T>(
     initialState: T | (() => T)

@@ -1,7 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { WindowData } from "../types";
 import { TabSelector } from "./TabSelector";
 import { DragContext, DragContextValue } from "../contexts/DragContext";
+import { Pane } from "./Pane";
 
 export function Container({
   containerId,
@@ -10,7 +11,8 @@ export function Container({
   renderWindow,
   onSelectTab,
   onDragStartWindow,
-  onDropWindow
+  onDropWindow,
+  renderTab
 }: {
   containerId: string;
   windows: WindowData[];
@@ -24,6 +26,7 @@ export function Container({
     dropContainerId: string,
     dropWindowId: string | null
   ) => (ev: DragEvent) => void;
+  renderTab: (data: WindowData) => React.ReactNode;
 }) {
   const dragging: DragContextValue = useContext(DragContext);
 
@@ -52,9 +55,10 @@ export function Container({
   };
 
   return (
-    <x-pane style={{ flexDirection: "column" }}>
+    <Pane style={{ flexDirection: "column" }}>
       <TabSelector
-        tabs={windows}
+        windows={windows}
+        renderTab={renderTab}
         selectedId={selectedId}
         onDragOver={onDragOverTabbar}
         onDrop={onDropTabbar}
@@ -63,9 +67,9 @@ export function Container({
         onDragStartTab={onDragStartWindow(containerId)}
         onDragOverTab={onDragOverTab}
       />
-      <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
+      <Pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
         {selectedId && renderWindow(selectedId)}
-      </x-pane>
-    </x-pane>
+      </Pane>
+    </Pane>
   );
 }

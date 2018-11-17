@@ -1,12 +1,17 @@
 {
-  "private": true,
+  "name": "react-unite",
   "license": "MIT",
+  "package": "0.1.0",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "parcel examples/index.html --open",
-    "build": "parcel build examples/index.html",
+    "dev": "parcel examples/index.html --open --out-dir example-dist",
+    "build": "rimraf dist & rollup -c",
     "test": "jest",
     "test:types": "tsc . --noEmit",
-    "deploy": "netlify deploy -d dist --prod"
+    "build-demo": "parcel build examples/index.html --out-dir example-dist",
+    "deploy-demo": "netlify deploy -d example-dist --prod"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
@@ -15,11 +20,16 @@
     "jest": "^23.6.0",
     "netlify-cli": "^2.2.1",
     "parcel-bundler": "^1.10.3",
+    "react": "16.7.0-alpha.0",
+    "react-dom": "16.7.0-alpha.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.67.3",
+    "rollup-plugin-typescript2": "^0.18.0",
     "ts-jest": "^23.10.4",
     "typescript": "^3.1.3"
   },
-  "dependencies": {
-    "react": "16.7.0-alpha.0",
-    "react-dom": "16.7.0-alpha.0"
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
   }
 }

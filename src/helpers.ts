@@ -63,7 +63,15 @@ export function pixelsToFractions(exprs: string[]): string[] {
   const values = exprs.map(pixelToNumber);
   const minVal = Math.min(...values);
   const fractionsRates = values.map(v => {
-    return v / minVal;
+    return Math.floor((v / minVal) * 100) / 100;
   });
   return fractionsRates.map(numberToFraction);
+}
+
+export function debounce(fn: Function, interval: number = 16) {
+  let timerId: number | any;
+  return () => {
+    clearTimeout(timerId);
+    timerId = setTimeout(fn, interval);
+  };
 }
