@@ -9,8 +9,6 @@ export function Container({
   selectedId,
   renderWindow,
   onSelectTab,
-  // onDropToTabbar,
-  // onDropToTab: _onDropToTab,
   onDragStartWindow,
   onDropWindow
 }: {
@@ -19,8 +17,6 @@ export function Container({
   selectedId: string | null;
   renderWindow: (id: string | null) => React.ReactNode;
   onSelectTab: (windowId: string) => (ev: Event) => void;
-  // onDropToTabbar: (windowId: string) => (ev: DragEvent) => void;
-  // onDropToTab: (windowId: string) => (ev: DragEvent) => void;
   onDragStartWindow: (
     containerId: string
   ) => (windowId: string) => (ev: DragEvent) => void;
@@ -29,63 +25,30 @@ export function Container({
     dropWindowId: string | null
   ) => (ev: DragEvent) => void;
 }) {
-  const dragContextValue: DragContextValue = useContext(DragContext);
-  // TabSelector handlers
-
-  // const onDragStart = (_ev: DragEvent) => {
-  //   console.log("conatiner:onDragStart");
-  // };
-
-  // const onDragEnd = (ev: DragEvent) => {
-  //   console.log("conatiner:onDragEnd");
-
-  //   // setDragging(false);
-  // };
-
-  const onDragEndTab = (_windowId: string) => (_ev: DragEvent) => {
-    console.log("conatiner:tab:onDragEnd", _windowId);
-    // setDragging(false);
-  };
-
-  // ------- important
+  const dragging: DragContextValue = useContext(DragContext);
 
   const onDragOverTabbar = (ev: DragEvent) => {
-    console.log("conatiner:onDragOver", containerId);
-    if (dragContextValue) {
-      if (dragContextValue.containerId !== containerId) {
+    if (dragging) {
+      if (dragging.containerId !== containerId) {
         ev.preventDefault();
       }
     }
   };
 
   const onDragOverTab = (windowId: string) => (ev: DragEvent) => {
-    if (dragContextValue) {
-      // other window
-      if (dragContextValue.windowId !== windowId) {
-        if (dragContextValue.containerId === containerId) {
-          // to same container
-          ev.preventDefault();
-        } else {
-          // ignore drag from other container
-        }
+    if (dragging) {
+      if (dragging.windowId !== windowId) {
+        ev.preventDefault();
       }
     }
   };
 
   const onDropTabbar = (ev: DragEvent) => {
-    console.log("conatiner:onDrop");
-    if (dragContextValue) {
-      // onDropToTabbar(dragContextValue.windowId)(ev);
-      console.log("Fire drop as Tabbar");
-      onDropWindow(containerId, null)(ev);
-    }
+    onDropWindow(containerId, null)(ev);
   };
 
   const onDropTab = (windowId: string) => (ev: DragEvent) => {
-    if (dragContextValue) {
-      console.log("Fire drop as Tab");
-      onDropWindow(containerId, windowId)(ev);
-    }
+    onDropWindow(containerId, windowId)(ev);
   };
 
   return (
@@ -93,15 +56,12 @@ export function Container({
       <TabSelector
         tabs={windows}
         selectedId={selectedId}
-        // onDragStart={onDragStart}
         onDragOver={onDragOverTabbar}
-        // onDragEnd={onDragEnd}
         onDrop={onDropTabbar}
         onDropTab={onDropTab}
         onSelectTab={onSelectTab}
         onDragStartTab={onDragStartWindow(containerId)}
         onDragOverTab={onDragOverTab}
-        onDragEndTab={onDragEndTab}
       />
       <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
         {selectedId && renderWindow(selectedId)}
