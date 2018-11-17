@@ -4,14 +4,14 @@ import { TabSelector } from "./TabSelector";
 
 export function Container({
   id,
-  tabs,
+  windows,
   selectedId,
   renderWindow,
   onSelectTab,
   onDropToTabs
 }: {
   id: string;
-  tabs: WindowData[];
+  windows: WindowData[];
   selectedId: string;
   renderWindow: (id: string) => React.ReactNode;
   onSelectTab: (tabId: string) => (ev: Event) => void;
@@ -73,7 +73,7 @@ export function Container({
   return (
     <x-pane style={{ flexDirection: "column" }}>
       <TabSelector
-        tabs={tabs}
+        tabs={windows}
         selectedId={selectedId}
         onDragStart={onDragStart}
         onDragOver={onDragOver}

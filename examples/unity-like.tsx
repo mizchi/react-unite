@@ -1,23 +1,22 @@
-import "./elements/index";
+import "./elements";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { GridData, LayoutData, Windowed, EditableLayout } from "../src";
-
-const initialGridData: GridData = {
-  // TODO: implement resizable
-  // rowsResizables: [false, true, true],
-  // columnsResizables: [false, true],
-  rows: ["40px", "1fr", "1fr"],
-  columns: ["1fr", "1fr"],
-  areas: [
-    ["header", "header"],
-    ["preview", "inspector"],
-    ["assets", "inspector"]
-  ]
-};
+import { LayoutData, Windowed, EditableLayout } from "../src";
 
 const initialLayoutData: LayoutData = {
+  grid: {
+    // TODO: implement resizable
+    // rowsResizables: [false, true, true],
+    // columnsResizables: [false, true],
+    columns: ["1fr", "1fr"],
+    rows: ["40px", "1fr", "1fr"],
+    areas: [
+      ["header", "header"],
+      ["preview", "inspector"],
+      ["assets", "inspector"]
+    ]
+  },
   windowMap: {
     "#scene": { displayName: "Scene", id: "#scene" },
     "#project": { displayName: "Project", id: "#project" },
@@ -27,6 +26,7 @@ const initialLayoutData: LayoutData = {
   },
   containers: [
     {
+      // TODO: containerType: tabs | one
       id: "preview",
       displayName: "Preview",
       selectedId: "#scene",
@@ -54,27 +54,13 @@ const UnityEditor = () => {
         <EditableLayout
           width={width}
           height={height}
-          grid={initialGridData}
           layout={initialLayoutData}
-          renderWindow={id => {
-            return <x-pane>{id}</x-pane>;
-            // if (id === "#inspector") {
-            //   const previewData = {
-            //     tabs: windows.map(w => w.tabs.join("-")),
-            //     areas: grid.areas,
-            //     rows: grid.rows,
-            //     columns: grid.columns
-            //   };
-            //   return (
-            //     <x-view>
-            //       <h3>LayoutData</h3>
-            //       <pre>
-            //         <code>{JSON.stringify(previewData, null, 2)}</code>
-            //       </pre>
-            //     </x-view>
-            //   );
-            // }
-            // return <x-pane>{id}</x-pane>;
+          renderWindow={win => {
+            return (
+              <x-pane>
+                {win.id}: {win.displayName}
+              </x-pane>
+            );
           }}
         />
       )}

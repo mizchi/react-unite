@@ -1,4 +1,4 @@
-import { buildEditableGridData } from "../buildEditableGridData";
+import { buildEditableGridData } from "../grid";
 import assert from "assert";
 
 test("2x1 a-b", () => {

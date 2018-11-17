@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { GridData } from "../types";
 import { Grid } from "./Grid";
-import { buildEditableGridData } from "../buildEditableGridData";
+import { buildEditableGridData } from "../api/grid";
 import { exprsToPixels, numberToPixel, pixelToNumber } from "../helpers";
 import { HitArea } from "./HitArea";
 

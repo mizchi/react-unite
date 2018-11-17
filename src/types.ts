@@ -14,6 +14,7 @@ export type WindowData = {
 };
 
 export type LayoutData = {
+  grid: GridData;
   containers: ContainerData[];
   windowMap: {
     [key: string]: WindowData;
@@ -22,7 +23,7 @@ export type LayoutData = {
 
 export type ContainerData = {
   id: string;
-  displayName: string;
+  displayName?: string;
   selectedId: string;
   windowIds: string[];
 };
