@@ -14,8 +14,8 @@ export function Container({
   windows: WindowData[];
   selectedId: string;
   renderWindow: (id: string) => React.ReactNode;
-  onSelectTab: (tabId: string) => (ev: Event) => void;
-  onDropToTabs: (tabId: string) => (ev: DragEvent) => void;
+  onSelectTab: (windowId: string) => (ev: Event) => void;
+  onDropToTabs: (windowId: string) => (ev: DragEvent) => void;
 }) {
   // const [dragging, setDragging] = useState<boolean>(false);
 
@@ -43,30 +43,30 @@ export function Container({
   const onDrop = (ev: DragEvent) => {
     console.log("onDrop");
     if (ev.dataTransfer) {
-      const tabId = ev.dataTransfer.getData("text");
-      onDropToTabs(tabId)(ev);
+      const windowId = ev.dataTransfer.getData("text");
+      onDropToTabs(windowId)(ev);
     }
   };
 
   // Tab handlers
 
-  const onDragStartTab = (tabId: string) => (ev: DragEvent) => {
-    console.log("onDragStartTab", tabId);
+  const onDragStartTab = (windowId: string) => (ev: DragEvent) => {
+    console.log("onDragStartTab", windowId);
 
     if (ev.dataTransfer) {
       ev.dataTransfer.effectAllowed = "drop";
-      ev.dataTransfer.setData("text", tabId);
+      ev.dataTransfer.setData("text", windowId);
       // setDragging(true);
     }
   };
 
-  const onDragEndTab = (_tabId: string) => (_ev: DragEvent) => {
-    console.log("onDragEndTab", _tabId);
+  const onDragEndTab = (_windowId: string) => (_ev: DragEvent) => {
+    console.log("onDragEndTab", _windowId);
     // setDragging(false);
   };
 
-  const onDropTab = (_tabId: string) => (_ev: DragEvent) => {
-    console.log("onDropTab", _tabId);
+  const onDropTab = (_windowId: string) => (_ev: DragEvent) => {
+    console.log("onDropTab", _windowId);
     // setDragging(false);
   };
 
