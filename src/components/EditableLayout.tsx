@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { moveWindowToContainer, selectWindowOnContainer } from "../api/layout";
 import * as Layout from "../api/layout";
-
 import { pixelsToFractions, pixelToNumber } from "../helpers";
 import { GridData, LayoutData, WindowData } from "../types";
 import { Container } from "./Container";
@@ -53,22 +51,20 @@ export function EditableLayout(props: {
   const onDropWindow = (
     dropContainerId: string,
     dropWindowId: string | null
-  ) => (_ev: DragEvent) => {
-    setDragContext(null);
-
-    // requestAnimationFrame(() => {
+  ) => (ev: DragEvent) => {
+    ev.stopPropagation(); // stop parent tabbar on drop
     if (dragContextValue) {
       console.log("ondrop!");
       const newLayout = Layout.moveWindowToContainer(
         layout,
         dragContextValue.windowId,
-        dropContainerId,
+        dragContextValue.containerId,
         dropWindowId,
         dropContainerId
       );
+      setDragContext(null);
       setLayout(newLayout);
     }
-    // });
   };
 
   const onChangeGridData = (data: GridData) => {

@@ -2,33 +2,49 @@ import { LayoutData, ContainerData } from "../types";
 
 export function moveWindowToContainer(
   layout: LayoutData,
-  windowId: string,
-  containerId: string,
-  droppedWindowId: string | null,
-  droppedContainerId: string | null
+  fromWindowId: string,
+  fromContainerId: string,
+  toWindowId: string | null,
+  toContainerId: string
 ): LayoutData {
-  // if (containerId !== droppedContainerId) {
-  const newContainers: ContainerData[] = layout.containers.map(w => {
-    let ids = w.windowIds;
-    let selectedId = w.selectedId;
-    if (w.id === containerId) {
-      ids = w.windowIds.includes(windowId)
-        ? w.windowIds
-        : [...w.windowIds, windowId];
-      selectedId = windowId;
-    } else {
-      ids = w.windowIds.filter(t => t !== windowId);
-      if (windowId === w.selectedId) {
-        selectedId = ids[0];
+  if (toContainerId === fromContainerId && toWindowId) {
+    // replace windows in container
+    const newConatiners = layout.containers.map(c => {
+      if (c.id !== toContainerId) {
+        return c;
       }
-    }
-    return { ...w, windowIds: ids, selectedId };
-  });
-
-  return { ...layout, containers: newContainers };
-  // } else {
-  //   return layout;
-  // }
+      const wids = c.windowIds.map(wid => {
+        if (wid === fromWindowId) {
+          return toWindowId;
+        } else if (wid === toWindowId) {
+          return fromWindowId;
+        } else {
+          return wid;
+        }
+      });
+      return { ...c, windowIds: wids };
+    });
+    return { ...layout, containers: newConatiners };
+  } else {
+    // send window to other container
+    const newContainers: ContainerData[] = layout.containers.map(c => {
+      let ids = c.windowIds;
+      let selectedId = c.selectedId;
+      if (c.id === toContainerId) {
+        ids = c.windowIds.includes(fromWindowId)
+          ? c.windowIds
+          : [...c.windowIds, fromWindowId];
+        selectedId = fromWindowId;
+      } else {
+        ids = c.windowIds.filter(i => i !== fromWindowId);
+        if (fromWindowId === c.selectedId) {
+          selectedId = ids[0];
+        }
+      }
+      return { ...c, windowIds: ids, selectedId };
+    });
+    return { ...layout, containers: newContainers };
+  }
 }
 
 export function selectWindowOnContainer(
