@@ -28,7 +28,7 @@ const initialLayoutData: LayoutData = {
     "#inspector": { displayName: "Inspector", id: "#inspector" },
     "#services": { displayName: "Services", id: "#services" }
   },
-  windows: [
+  containers: [
     {
       id: "preview",
       displayName: "Preview",

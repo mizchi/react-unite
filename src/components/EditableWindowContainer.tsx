@@ -15,7 +15,7 @@ export function EditableWindowContainer(props: {
 }) {
   const tabMap = props.layout.tabMap;
   const [grid, setGrid] = useState(props.grid);
-  const [windows, setWindows] = useState(props.layout.windows);
+  const [windows, setWindows] = useState(props.layout.containers);
 
   return (
     <EditableGrid

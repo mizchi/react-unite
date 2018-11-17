@@ -8,20 +8,13 @@ export type EditbalGridData = GridData & {
   controllers: GridControllers;
 };
 
-export type GridControllers = {
-  verticals: [number, number][];
-  horizontals: [number, number][];
-  crosses: [number, number][];
-  idxMap: { [key: string]: string };
-};
-
 export type TabData = {
   id: string;
   displayName: string;
 };
 
 export type LayoutData = {
-  windows: WindowData[];
+  containers: WindowData[];
   tabMap: {
     [key: string]: TabData;
   };
@@ -32,4 +25,11 @@ export type WindowData = {
   displayName: string;
   selectedId: string;
   tabs: string[];
+};
+
+type GridControllers = {
+  verticals: [number, number][];
+  horizontals: [number, number][];
+  crosses: [number, number][];
+  idxMap: { [key: string]: string };
 };
