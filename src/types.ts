@@ -8,7 +8,7 @@ export type EditbalGridData = GridData & {
   controllers: Controllers;
 };
 
-export type TabData = {
+export type WindowData = {
   id: string;
   displayName: string;
 };
@@ -16,7 +16,7 @@ export type TabData = {
 export type LayoutData = {
   containers: ContainerData[];
   tabMap: {
-    [key: string]: TabData;
+    [key: string]: WindowData;
   };
 };
 

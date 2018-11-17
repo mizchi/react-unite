@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TabData } from "../types";
+import { WindowData } from "../types";
 import { WindowTabSelector } from "./WindowTabSelector";
 
 export function Window({
@@ -11,7 +11,7 @@ export function Window({
   onDropToTabs
 }: {
   id: string;
-  tabs: TabData[];
+  tabs: WindowData[];
   selectedId: string;
   renderWindow: (id: string) => React.ReactNode;
   onSelectTab: (tabId: string) => (ev: Event) => void;
