@@ -6,7 +6,9 @@ export function WindowTabSelector(props: {
   selectedId: string;
   onSelectTab: (id: string) => (ev: Event) => void;
   onDrop?: (ev: DragEvent) => void;
-  onDragOver: (ev: DragEvent) => void;
+  onDragOver?: (ev: DragEvent) => void;
+  onDragStart?: (ev: DragEvent) => void;
+  onDragEnd?: (ev: DragEvent) => void;
   onDragStartTab?: (id: string) => (ev: DragEvent) => void;
   onDragEndTab?: (id: string) => (ev: DragEvent) => void;
   onDragOverTab?: (id: string) => (ev: DragEvent) => void;
@@ -15,6 +17,8 @@ export function WindowTabSelector(props: {
   return (
     <x-view
       onDragOver={props.onDragOver as any}
+      onDragStart={props.onDragStart as any}
+      onDragEnd={props.onDragEnd as any}
       onDrop={props.onDrop as any}
       style={{
         height: 30,

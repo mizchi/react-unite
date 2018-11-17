@@ -116,7 +116,7 @@ const UnityEditor = () => {
                       });
                       setWindows(newWindows);
                     }}
-                    onDropTab={onDropTab}
+                    onDropToTabs={onDropTab}
                     renderContent={id => {
                       if (id === "#inspector") {
                         const previewData = {

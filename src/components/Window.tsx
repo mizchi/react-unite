@@ -1,36 +1,73 @@
-import React from "react";
+import React, { useState } from "react";
 import { TabData } from "../types";
 import { WindowTabSelector } from "./WindowTabSelector";
 
 export function Window({
+  id,
   tabs,
   selectedId,
   renderContent,
   onSelectTab,
-  onDropTab
+  onDropToTabs
 }: {
   id: string;
   tabs: TabData[];
   selectedId: string;
   renderContent: (id: string) => React.ReactNode;
   onSelectTab: (tabId: string) => (ev: Event) => void;
-  onDropTab: (tabId: string) => (ev: DragEvent) => void;
+  onDropToTabs: (tabId: string) => (ev: DragEvent) => void;
 }) {
-  const onDrop = (ev: DragEvent) => {
-    if (ev.dataTransfer) {
-      const tabId = ev.dataTransfer.getData("text");
-      onDropTab(tabId)(ev);
-    }
-  };
-  const onDragOver = (ev: DragEvent) => {
-    ev.preventDefault();
+  // const [dragging, setDragging] = useState<boolean>(false);
+
+  // TabSelector handlers
+
+  const onDragStart = (ev: DragEvent) => {
+    console.log("onDragStart");
+
+    // setDragging(false);
   };
 
+  const onDragOver = (ev: DragEvent) => {
+    console.log("onDragOver", id);
+    // if (!dragging) {
+    ev.preventDefault();
+    // }
+  };
+
+  const onDragEnd = (ev: DragEvent) => {
+    console.log("onDragEnd");
+
+    // setDragging(false);
+  };
+
+  const onDrop = (ev: DragEvent) => {
+    console.log("onDrop");
+    if (ev.dataTransfer) {
+      const tabId = ev.dataTransfer.getData("text");
+      onDropToTabs(tabId)(ev);
+    }
+  };
+
+  // Tab handlers
+
   const onDragStartTab = (tabId: string) => (ev: DragEvent) => {
+    console.log("onDragStartTab", tabId);
+
     if (ev.dataTransfer) {
       ev.dataTransfer.effectAllowed = "drop";
       ev.dataTransfer.setData("text", tabId);
+      // setDragging(true);
     }
+  };
+
+  const onDragEndTab = (_tabId: string) => (_ev: DragEvent) => {
+    console.log("onDragEndTab", _tabId);
+    // setDragging(false);
+  };
+
+  const onDropTab = (_tabId: string) => (_ev: DragEvent) => {
+    console.log("onDropTab", _tabId);
+    // setDragging(false);
   };
 
   return (
@@ -38,12 +75,16 @@ export function Window({
       <WindowTabSelector
         tabs={tabs}
         selectedId={selectedId}
+        onDragStart={onDragStart}
         onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
         onDrop={onDrop}
+        onDropTab={onDropTab}
         onSelectTab={onSelectTab}
         onDragStartTab={onDragStartTab}
+        onDragEndTab={onDragEndTab}
       />
-      <x-pane style={{ flex: 1, background: "white", overflowY: "scroll" }}>
+      <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
         {renderContent(selectedId)}
       </x-pane>
     </x-pane>
