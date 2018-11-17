@@ -1,4 +1,14 @@
-# flexible-grid
+# EditableLayout
+
+WIP
+
+## TODO
+
+- [ ] Swap window on drop
+- [ ] resizableRows|Columns option
+- [ ] Resizable Box
+- [ ] Quit x-pane in src
+- [ ] Publish
 
 ## How to use
 
@@ -47,12 +57,6 @@ ReactDOM.render(
   root
 );
 ```
-
-## TODO
-
-- [ ] EditableLayout
-- [ ] Publish
-- [ ] Quit x-pane in src
 
 [demo](https://admiring-curie-8355d7.netlify.com)
 

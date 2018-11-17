@@ -30,7 +30,7 @@ export function TabSelector(props: {
     >
       {props.tabs.map(tab => {
         return (
-          <WindowTabButton
+          <TabButton
             key={tab.id}
             id={tab.id}
             displayName={tab.displayName}
@@ -47,7 +47,7 @@ export function TabSelector(props: {
   );
 }
 
-function WindowTabButton(props: {
+function TabButton(props: {
   id: string;
   displayName: string;
   selected?: boolean;

@@ -48,13 +48,23 @@ export function EditableLayout(props: {
       {...layout.grid}
     >
       {layout.containers.map(container => {
-        const onDropTab = (windowId: string) => (_ev: DragEvent) => {
+        const onDropTabbar = (windowId: string) => (_ev: DragEvent) => {
           const newLayout = moveWindowToContainer(
             layout,
             windowId,
             container.id
           );
           setLayout(newLayout);
+        };
+
+        const onDropTab = (windowId: string) => (_ev: DragEvent) => {
+          console.log("edatble-layout:onDroptab");
+          // const newLayout = moveWindowToContainer(
+          //   layout,
+          //   windowId,
+          //   container.id
+          // );
+          // setLayout(newLayout);
         };
 
         const windows = container.windowIds.map(tid => layout.windowMap[tid]);
@@ -65,7 +75,8 @@ export function EditableLayout(props: {
               windows={windows}
               selectedId={container.selectedId}
               onSelectTab={onSelectTab(container.id)}
-              onDropToTabs={onDropTab}
+              onDropToTabbar={onDropTabbar}
+              onDropToTab={onDropTab}
               renderWindow={id => props.renderWindow(layout.windowMap[id])}
             />
           </GridArea>
