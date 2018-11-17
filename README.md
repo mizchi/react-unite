@@ -10,7 +10,7 @@ yarn add react-unite
 
 CAUTION: `react-unite` require `react@16.7.0-alpha.0` & `react-dom@16.7.0-alpha.0` to use react-hooks.
 
-Sample project https://github.com/mizchi-sandbox/minfront
+Sample project https://github.com/mizchi-sandbox/react-unite-example
 
 ## Concept
 
