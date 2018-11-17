@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GridData, GridControllers } from "../types";
+import { GridData } from "../types";
 import { Grid } from "./Grid";
 import { buildEditableGridData } from "../buildEditableGridData";
 import { exprsToPixels, numberToPixel, pixelToNumber } from "../helpers";

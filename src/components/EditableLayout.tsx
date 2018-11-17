@@ -6,7 +6,7 @@ import { pixelToNumber, pixelsToFractions } from "../helpers";
 import { EditableGrid } from "./EditableGrid";
 import { GridData, LayoutData } from "../types";
 
-export function EditableWindowContainer(props: {
+export function EditableLayout(props: {
   width: number | string;
   height: number | string;
   layout: LayoutData;

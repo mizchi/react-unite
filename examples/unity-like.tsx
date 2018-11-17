@@ -2,15 +2,12 @@ import "./elements/index";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-  GridData,
-  LayoutData,
-  Windowed,
-  EditableWindowContainer
-} from "../src";
+import { GridData, LayoutData, Windowed, EditableLayout } from "../src";
 
 const initialGridData: GridData = {
+  // TODO: implement resizable
   // rowsResizables: [false, true, true],
+  // columnsResizables: [false, true],
   rows: ["40px", "1fr", "1fr"],
   columns: ["1fr", "1fr"],
   areas: [
@@ -54,7 +51,7 @@ const UnityEditor = () => {
   return (
     <Windowed>
       {(width, height) => (
-        <EditableWindowContainer
+        <EditableLayout
           width={width}
           height={height}
           grid={initialGridData}

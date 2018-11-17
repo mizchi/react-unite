@@ -1,5 +1,5 @@
 export { EditableGrid } from "./components/EditableGrid";
-export { EditableWindowContainer } from "./components/EditableWindowContainer";
+export { EditableLayout } from "./components/EditableLayout";
 export { Grid, GridArea } from "./components/Grid";
 export { Container } from "./components/Container";
 export { Windowed } from "./components/Windowed";
