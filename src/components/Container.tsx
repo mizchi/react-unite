@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { WindowData } from "../types";
 import { TabSelector } from "./TabSelector";
+import {
+  DragAndDropContext,
+  DragAndDropContextValue
+} from "../contexts/DragAndDropContext";
 
 export function Container({
   id,
@@ -9,7 +13,8 @@ export function Container({
   renderWindow,
   onSelectTab,
   onDropToTabbar,
-  onDropToTab: _onDropToTab
+  onDropToTab: _onDropToTab,
+  onDragStartWindow
 }: {
   id: string;
   windows: WindowData[];
@@ -18,14 +23,17 @@ export function Container({
   onSelectTab: (windowId: string) => (ev: Event) => void;
   onDropToTabbar: (windowId: string) => (ev: DragEvent) => void;
   onDropToTab: (windowId: string) => (ev: DragEvent) => void;
+  onDragStartWindow: (
+    containerId: string
+  ) => (windowId: string) => (ev: DragEvent) => void;
 }) {
-  // const [dragging, setDragging] = useState<boolean>(false);
-
+  const dragAndDropDropValue: DragAndDropContextValue = useContext(
+    DragAndDropContext
+  );
   // TabSelector handlers
 
-  const onDragStart = (ev: DragEvent) => {
+  const onDragStart = (_ev: DragEvent) => {
     console.log("conatiner:onDragStart");
-
     // setDragging(false);
   };
 
@@ -47,27 +55,34 @@ export function Container({
     if (ev.dataTransfer) {
       const windowId = ev.dataTransfer.getData("text");
       onDropToTabbar(windowId)(ev);
+      // setDragAndDropContext({ dragging: null });
     }
   };
 
   // Tab handlers
 
-  const onDragStartTab = (windowId: string) => (ev: DragEvent) => {
-    console.log("conatiner:tab:onDragStart", windowId);
+  // const onDragStartTab = (windowId: string) => (ev: DragEvent) => {
+  //   console.log("conatiner:tab:onDragStart", windowId);
+  //   if (ev.dataTransfer) {
+  //     ev.dataTransfer.effectAllowed = "drop";
+  //     ev.dataTransfer.setData("text", windowId);
+  //     // setDragAndDropContext({
+  //     //   dragging: {
+  //     //     windowId,
+  //     //     containerId: id
+  //     //   }
+  //     // });
 
-    if (ev.dataTransfer) {
-      ev.dataTransfer.effectAllowed = "drop";
-      ev.dataTransfer.setData("text", windowId);
-      // setDragging(true);
-    }
-  };
+  //     // setDragging(true);
+  //   }
+  // };
 
   const onDragOverTab = (windowId: string) => (ev: DragEvent) => {
     ev.preventDefault();
     console.log("conatiner:tab:onDragStart", windowId);
-    if (ev.dataTransfer) {
-      ev.dataTransfer.dropEffect = "none";
-    }
+    // if (ev.dataTransfer) {
+    //   ev.dataTransfer.dropEffect = "none";
+    // }
     // if (ev.dataTransfer) {
     //   ev.dataTransfer.effectAllowed = "drop";
     //   ev.dataTransfer.setData("text", windowId);
@@ -98,7 +113,8 @@ export function Container({
         onDrop={onDrop}
         onDropTab={onDropTab}
         onSelectTab={onSelectTab}
-        onDragStartTab={onDragStartTab}
+        onDragStartTab={onDragStartWindow(id)}
+        onDragOverTab={onDragOverTab}
         onDragEndTab={onDragEndTab}
       />
       <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
