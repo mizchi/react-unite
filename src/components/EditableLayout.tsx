@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { moveWindowToContainer, selectWindowOnContainer } from "../api/layout";
+// import { moveWindowToContainer, selectWindowOnContainer } from "../api/layout";
+import * as Layout from "../api/layout";
+
 import { pixelsToFractions, pixelToNumber } from "../helpers";
 import { GridData, LayoutData, WindowData } from "../types";
 import { Container } from "./Container";
 import { EditableGrid } from "./EditableGrid";
-import {
-  DragAndDropContext,
-  DragAndDropContextValue
-} from "../contexts/DragAndDropContext";
+import { DragContext, DragContextValue } from "../contexts/DragContext";
 import { GridArea } from "./Grid";
 
 export function EditableLayout(props: {
@@ -19,9 +18,7 @@ export function EditableLayout(props: {
 }) {
   // State
   const [layout, setLayout] = useState(props.layout);
-  const [dragAndDropValue, setDragAndDropContext] = useState<
-    DragAndDropContextValue
-  >({ dragging: null });
+  const [dragContextValue, setDragContext] = useState<DragContextValue>(null);
 
   // Effect
   useEffect(() => {
@@ -32,7 +29,11 @@ export function EditableLayout(props: {
   const onSelectTab = (containerId: string) => (windowId: string) => (
     _ev: Event
   ) => {
-    const newLayout = selectWindowOnContainer(layout, windowId, containerId);
+    const newLayout = Layout.selectWindowOnContainer(
+      layout,
+      windowId,
+      containerId
+    );
     setLayout(newLayout);
   };
 
@@ -42,7 +43,32 @@ export function EditableLayout(props: {
     if (ev.dataTransfer) {
       ev.dataTransfer.effectAllowed = "drop";
       ev.dataTransfer.setData("text", windowId);
+      setDragContext({
+        containerId,
+        windowId
+      });
     }
+  };
+
+  const onDropWindow = (
+    dropContainerId: string,
+    dropWindowId: string | null
+  ) => (_ev: DragEvent) => {
+    setDragContext(null);
+
+    // requestAnimationFrame(() => {
+    if (dragContextValue) {
+      console.log("ondrop!");
+      const newLayout = Layout.moveWindowToContainer(
+        layout,
+        dragContextValue.windowId,
+        dropContainerId,
+        dropWindowId,
+        dropContainerId
+      );
+      setLayout(newLayout);
+    }
+    // });
   };
 
   const onChangeGridData = (data: GridData) => {
@@ -55,7 +81,7 @@ export function EditableLayout(props: {
   };
 
   return (
-    <DragAndDropContext.Provider value={dragAndDropValue}>
+    <DragContext.Provider value={dragContextValue}>
       <EditableGrid
         key={`${props.width}-${props.height}`}
         width={pixelToNumber(props.width)}
@@ -65,36 +91,22 @@ export function EditableLayout(props: {
         {...layout.grid}
       >
         {layout.containers.map(container => {
-          const onDropTabbar = (windowId: string) => (_ev: DragEvent) => {
-            const newLayout = moveWindowToContainer(
-              layout,
-              windowId,
-              container.id
-            );
-            setLayout(newLayout);
-          };
-
-          const onDropTab = (windowId: string) => (_ev: DragEvent) => {
-            console.log("edatble-layout:onDroptab");
-          };
-
           const windows = container.windowIds.map(tid => layout.windowMap[tid]);
           return (
             <GridArea name={container.id} key={container.id}>
               <Container
-                id={container.id}
+                containerId={container.id}
                 windows={windows}
                 selectedId={container.selectedId}
                 onSelectTab={onSelectTab(container.id)}
-                onDropToTabbar={onDropTabbar}
-                onDropToTab={onDropTab}
                 onDragStartWindow={onDragStartWindow}
+                onDropWindow={onDropWindow}
                 renderWindow={id => props.renderWindow(layout.windowMap[id])}
               />
             </GridArea>
           );
         })}
       </EditableGrid>
-    </DragAndDropContext.Provider>
+    </DragContext.Provider>
   );
 }

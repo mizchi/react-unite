@@ -3,8 +3,11 @@ import { LayoutData, ContainerData } from "../types";
 export function moveWindowToContainer(
   layout: LayoutData,
   windowId: string,
-  containerId: string
+  containerId: string,
+  droppedWindowId: string | null,
+  droppedContainerId: string | null
 ): LayoutData {
+  // if (containerId !== droppedContainerId) {
   const newContainers: ContainerData[] = layout.containers.map(w => {
     let ids = w.windowIds;
     let selectedId = w.selectedId;
@@ -21,7 +24,11 @@ export function moveWindowToContainer(
     }
     return { ...w, windowIds: ids, selectedId };
   });
+
   return { ...layout, containers: newContainers };
+  // } else {
+  //   return layout;
+  // }
 }
 
 export function selectWindowOnContainer(
