@@ -6,14 +6,14 @@ export function Window({
   id,
   tabs,
   selectedId,
-  renderContent,
+  renderWindow,
   onSelectTab,
   onDropToTabs
 }: {
   id: string;
   tabs: TabData[];
   selectedId: string;
-  renderContent: (id: string) => React.ReactNode;
+  renderWindow: (id: string) => React.ReactNode;
   onSelectTab: (tabId: string) => (ev: Event) => void;
   onDropToTabs: (tabId: string) => (ev: DragEvent) => void;
 }) {
@@ -85,7 +85,7 @@ export function Window({
         onDragEndTab={onDragEndTab}
       />
       <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
-        {renderContent(selectedId)}
+        {renderWindow(selectedId)}
       </x-pane>
     </x-pane>
   );
