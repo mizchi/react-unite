@@ -3,7 +3,7 @@ import React from "react";
 
 export function TabSelector(props: {
   tabs: Array<WindowData>;
-  selectedId: string;
+  selectedId: string | null;
   onSelectTab: (id: string) => (ev: Event) => void;
   onDrop?: (ev: DragEvent) => void;
   onDragOver?: (ev: DragEvent) => void;

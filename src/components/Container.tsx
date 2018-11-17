@@ -16,8 +16,8 @@ export function Container({
 }: {
   containerId: string;
   windows: WindowData[];
-  selectedId: string;
-  renderWindow: (id: string) => React.ReactNode;
+  selectedId: string | null;
+  renderWindow: (id: string | null) => React.ReactNode;
   onSelectTab: (windowId: string) => (ev: Event) => void;
   // onDropToTabbar: (windowId: string) => (ev: DragEvent) => void;
   // onDropToTab: (windowId: string) => (ev: DragEvent) => void;
@@ -104,7 +104,7 @@ export function Container({
         onDragEndTab={onDragEndTab}
       />
       <x-pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
-        {renderWindow(selectedId)}
+        {selectedId && renderWindow(selectedId)}
       </x-pane>
     </x-pane>
   );

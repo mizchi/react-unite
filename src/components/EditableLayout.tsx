@@ -54,7 +54,6 @@ export function EditableLayout(props: {
   ) => (ev: DragEvent) => {
     ev.stopPropagation(); // stop parent tabbar on drop
     if (dragContextValue) {
-      console.log("ondrop!");
       const newLayout = Layout.moveWindowToContainer(
         layout,
         dragContextValue.windowId,
@@ -93,11 +92,17 @@ export function EditableLayout(props: {
               <Container
                 containerId={container.id}
                 windows={windows}
-                selectedId={container.selectedId}
+                selectedId={container.selectedId || null}
                 onSelectTab={onSelectTab(container.id)}
                 onDragStartWindow={onDragStartWindow}
                 onDropWindow={onDropWindow}
-                renderWindow={id => props.renderWindow(layout.windowMap[id])}
+                renderWindow={(id: string | null) => {
+                  if (id) {
+                    return props.renderWindow(layout.windowMap[id]);
+                  } else {
+                    return [];
+                  }
+                }}
               />
             </GridArea>
           );

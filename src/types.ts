@@ -24,7 +24,7 @@ export type LayoutData = {
 export type ContainerData = {
   id: string;
   displayName?: string;
-  selectedId: string;
+  selectedId?: string;
   windowIds: string[];
 };
 

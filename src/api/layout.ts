@@ -13,7 +13,8 @@ export function moveWindowToContainer(
       if (c.id !== toContainerId) {
         return c;
       }
-      const wids = c.windowIds.map(wid => {
+      // let selectedId = c.selectedId;
+      const newWindowIds = c.windowIds.map(wid => {
         if (wid === fromWindowId) {
           return toWindowId;
         } else if (wid === toWindowId) {
@@ -22,7 +23,7 @@ export function moveWindowToContainer(
           return wid;
         }
       });
-      return { ...c, windowIds: wids };
+      return { ...c, windowIds: newWindowIds };
     });
     return { ...layout, containers: newConatiners };
   } else {
