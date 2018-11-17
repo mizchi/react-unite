@@ -23,3 +23,18 @@ export function moveWindowToContainer(
   });
   return { ...layout, containers: newContainers };
 }
+
+export function selectWindowOnContainer(
+  layout: LayoutData,
+  windowId: string,
+  containerId: String
+) {
+  const newContainers = layout.containers.map(c => {
+    if (containerId === c.id) {
+      return { ...c, selectedId: windowId };
+    } else {
+      return c;
+    }
+  });
+  return { ...layout, containers: newContainers };
+}

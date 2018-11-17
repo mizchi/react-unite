@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { moveWindowToContainer, selectWindowOnContainer } from "../api/layout";
+import { pixelsToFractions, pixelToNumber } from "../helpers";
+import { GridData, LayoutData, WindowData } from "../types";
 import { Container } from "./Container";
-import { GridArea } from "./Grid";
-import { pixelToNumber, pixelsToFractions } from "../helpers";
 import { EditableGrid } from "./EditableGrid";
-import { LayoutData, WindowData } from "../types";
-import { moveWindowToContainer } from "../api/layout";
+import { GridArea } from "./Grid";
 
 export function EditableLayout(props: {
   width: number | string;
@@ -14,19 +13,29 @@ export function EditableLayout(props: {
   renderWindow: (data: WindowData) => React.ReactNode;
   onChangeLayout?: (data: LayoutData) => void;
 }) {
-  const windowMap = props.layout.windowMap; // TODO: editable
-  const [grid, setGrid] = useState(props.layout.grid);
-  const [containers, setContainers] = useState(props.layout.containers);
+  // State
+  const [layout, setLayout] = useState(props.layout);
 
-  // TODO: Remove this
-  const withCurrentLayout = (fn: (newLayout: LayoutData) => void) => {
-    const newLayout: LayoutData = {
-      ...props.layout,
-      containers,
-      grid,
-      windowMap
+  // Effect
+  useEffect(() => {
+    props.onChangeLayout && props.onChangeLayout(layout);
+  });
+
+  // Handlers
+  const onSelectTab = (containerId: string) => (windowId: string) => (
+    _ev: Event
+  ) => {
+    const newLayout = selectWindowOnContainer(layout, windowId, containerId);
+    setLayout(newLayout);
+  };
+
+  const onChangeGridData = (data: GridData) => {
+    const newGrid = {
+      ...data,
+      rows: pixelsToFractions(data.rows),
+      columns: pixelsToFractions(data.columns)
     };
-    fn(newLayout);
+    setLayout({ ...layout, grid: newGrid });
   };
 
   return (
@@ -35,69 +44,29 @@ export function EditableLayout(props: {
       width={pixelToNumber(props.width)}
       height={pixelToNumber(props.height)}
       spacerSize={8}
-      onChangeGridData={data => {
-        const newGrid = {
-          ...data,
-          rows: pixelsToFractions(data.rows),
-          columns: pixelsToFractions(data.columns)
-        };
-        setGrid(newGrid);
-        withCurrentLayout(data => {
-          props.onChangeLayout &&
-            props.onChangeLayout({ ...data, grid: newGrid });
-        });
-      }}
-      {...grid}
+      onChangeGridData={onChangeGridData}
+      {...layout.grid}
     >
-      {containers.map(container => {
+      {layout.containers.map(container => {
         const onDropTab = (windowId: string) => (_ev: DragEvent) => {
-          // TODO: Extract moveToOtherContainer
           const newLayout = moveWindowToContainer(
-            {
-              ...props.layout,
-              containers,
-              grid,
-              windowMap
-            },
+            layout,
             windowId,
             container.id
           );
-          setContainers(newLayout.containers);
-          withCurrentLayout(data => {
-            props.onChangeLayout &&
-              props.onChangeLayout({
-                ...data,
-                containers: newLayout.containers
-              });
-          });
+          setLayout(newLayout);
         };
 
-        const windows = container.windowIds.map(tid => windowMap[tid]);
+        const windows = container.windowIds.map(tid => layout.windowMap[tid]);
         return (
           <GridArea name={container.id} key={container.id}>
             <Container
               id={container.id}
               windows={windows}
               selectedId={container.selectedId}
-              onSelectTab={tabId => _ev => {
-                const newContainers = containers.map(c => {
-                  if (container.id === c.id) {
-                    return { ...c, selectedId: tabId };
-                  } else {
-                    return c;
-                  }
-                });
-                setContainers(newContainers);
-                withCurrentLayout(data => {
-                  props.onChangeLayout &&
-                    props.onChangeLayout({
-                      ...data,
-                      containers: newContainers
-                    });
-                });
-              }}
+              onSelectTab={onSelectTab(container.id)}
               onDropToTabs={onDropTab}
-              renderWindow={id => props.renderWindow(windowMap[id])}
+              renderWindow={id => props.renderWindow(layout.windowMap[id])}
             />
           </GridArea>
         );
