@@ -15,7 +15,7 @@ export type WindowData = {
 
 export type LayoutData = {
   containers: ContainerData[];
-  tabMap: {
+  windowMap: {
     [key: string]: WindowData;
   };
 };
@@ -24,7 +24,7 @@ export type ContainerData = {
   id: string;
   displayName: string;
   selectedId: string;
-  tabs: string[];
+  windowIds: string[];
 };
 
 export type Controllers = {

@@ -21,7 +21,7 @@ const initialGridData: GridData = {
 };
 
 const initialLayoutData: LayoutData = {
-  tabMap: {
+  windowMap: {
     "#scene": { displayName: "Scene", id: "#scene" },
     "#project": { displayName: "Project", id: "#project" },
     "#hierachy": { displayName: "Hierachy", id: "#hierachy" },
@@ -33,19 +33,19 @@ const initialLayoutData: LayoutData = {
       id: "preview",
       displayName: "Preview",
       selectedId: "#scene",
-      tabs: ["#scene"]
+      windowIds: ["#scene"]
     },
     {
       id: "assets",
       displayName: "Preview",
       selectedId: "#project",
-      tabs: ["#project", "#hierachy"]
+      windowIds: ["#project", "#hierachy"]
     },
     {
       id: "inspector",
       displayName: "Inspector",
       selectedId: "#inspector",
-      tabs: ["#inspector", "#services"]
+      windowIds: ["#inspector", "#services"]
     }
   ]
 };

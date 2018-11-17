@@ -11,9 +11,10 @@ export function EditableWindowContainer(props: {
   height: number | string;
   layout: LayoutData;
   grid: GridData;
+  // TODO: take WindowData
   renderWindow: (id: string) => React.ReactNode;
 }) {
-  const tabMap = props.layout.tabMap;
+  const tabMap = props.layout.windowMap;
   const [grid, setGrid] = useState(props.grid);
   const [windows, setWindows] = useState(props.layout.containers);
 
@@ -36,23 +37,25 @@ export function EditableWindowContainer(props: {
       {windows.map(win => {
         const onDropTab = (tabId: string) => (_ev: DragEvent) => {
           const newWindows = windows.map(w => {
-            let tabs = w.tabs;
+            let windowIds = w.windowIds;
             let selectedId = w.selectedId;
             if (w.id === win.id) {
-              tabs = w.tabs.includes(tabId) ? w.tabs : [...w.tabs, tabId];
+              windowIds = w.windowIds.includes(tabId)
+                ? w.windowIds
+                : [...w.windowIds, tabId];
               selectedId = tabId;
             } else {
-              tabs = w.tabs.filter(t => t !== tabId);
+              windowIds = w.windowIds.filter(t => t !== tabId);
               if (tabId === w.selectedId) {
-                selectedId = tabs[0];
+                selectedId = windowIds[0];
               }
             }
-            return { ...w, tabs, selectedId };
+            return { ...w, windowIds, selectedId };
           });
 
           setWindows(newWindows);
         };
-        const tabs = win.tabs.map(tid => tabMap[tid]);
+        const tabs = win.windowIds.map(tid => tabMap[tid]);
         return (
           <GridArea name={win.id} key={win.id}>
             <Container
