@@ -1,7 +1,7 @@
 import { WindowData } from "../types";
 import React from "react";
 
-export function WindowTabSelector(props: {
+export function TabSelector(props: {
   tabs: Array<WindowData>;
   selectedId: string;
   onSelectTab: (id: string) => (ev: Event) => void;

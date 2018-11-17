@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { WindowData } from "../types";
-import { WindowTabSelector } from "./WindowTabSelector";
+import { TabSelector } from "./TabSelector";
 
 export function Container({
   id,
@@ -72,7 +72,7 @@ export function Container({
 
   return (
     <x-pane style={{ flexDirection: "column" }}>
-      <WindowTabSelector
+      <TabSelector
         tabs={tabs}
         selectedId={selectedId}
         onDragStart={onDragStart}
