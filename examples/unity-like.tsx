@@ -1,6 +1,6 @@
 import "./elements";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   LayoutData,
@@ -39,19 +39,22 @@ const initialLayoutData: LayoutData = {
       id: "preview",
       displayName: "Preview",
       selectedId: "#scene",
-      windowIds: ["#scene"]
+      windowIds: ["#scene"],
+      showTab: false
     },
     {
       id: "assets",
       displayName: "Preview",
       selectedId: "#project",
-      windowIds: ["#project", "#hierachy"]
+      windowIds: ["#project", "#hierachy"],
+      showTab: true
     },
     {
       id: "inspector",
       displayName: "Inspector",
       selectedId: "#inspector",
-      windowIds: ["#inspector", "#services"]
+      windowIds: ["#inspector", "#services"],
+      showTab: true
     }
   ]
 };
@@ -62,9 +65,18 @@ const childGridData = {
   areas: [["a", "b", "c", "d"], ["e", "b", "g", "d"], ["j", "k", "l", "l"]]
 };
 
+function X() {
+  useEffect(() => {
+    console.log("mount x");
+    return () => {
+      console.log("unmount x");
+    }
+  }, [])
+  return <div>x</div>
+}
+
 const UniteEditor = () => {
   const [grid, setGrid] = useState(childGridData);
-
   return (
     <Windowed>
       {(width, height) => (
@@ -80,6 +92,7 @@ const UniteEditor = () => {
               return (
                 <x-view style={{ width: "100%", height: "100%" }}>
                   Project
+                  <X />
                 </x-view>
               );
             }

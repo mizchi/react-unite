@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as Layout from "../api/layout";
 import { pixelsToFractions, pixelToNumber } from "../helpers";
 import { GridData, LayoutData, WindowData } from "../types";
@@ -49,7 +49,7 @@ export function EditableLayout(props: {
     }
   };
 
-  const onDropWindow = (
+  const onDropWindow = useCallback((
     dropContainerId: string,
     dropWindowId: string | null
   ) => (ev: DragEvent) => {
@@ -65,16 +65,16 @@ export function EditableLayout(props: {
       setDragContext(null);
       setLayout(newLayout);
     }
-  };
+  }, [layout, dragContextValue]);
 
-  const onChangeGridData = (data: GridData) => {
+  const onChangeGridData = useCallback((data: GridData) => {
     const newGrid = {
       ...data,
       rows: pixelsToFractions(data.rows),
       columns: pixelsToFractions(data.columns)
     };
     setLayout({ ...layout, grid: newGrid });
-  };
+  }, [layout]);
 
   return (
     <DragContext.Provider value={dragContextValue}>
@@ -91,6 +91,7 @@ export function EditableLayout(props: {
           return (
             <GridArea name={container.id} key={container.id}>
               <Container
+                showTab={container.showTab ?? true}
                 containerId={container.id}
                 windows={windows}
                 renderTab={props.renderTab}

@@ -25,6 +25,7 @@ export type ContainerData = {
   id: string;
   displayName?: string;
   selectedId?: string;
+  showTab?: boolean;
   windowIds: string[];
 };
 

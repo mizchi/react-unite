@@ -12,7 +12,8 @@ export function Container({
   onSelectTab,
   onDragStartWindow,
   onDropWindow,
-  renderTab
+  renderTab,
+  showTab
 }: {
   containerId: string;
   windows: WindowData[];
@@ -27,6 +28,7 @@ export function Container({
     dropWindowId: string | null
   ) => (ev: DragEvent) => void;
   renderTab: (data: WindowData) => React.ReactNode;
+  showTab: boolean
 }) {
   const dragging: DragContextValue = useContext(DragContext);
 
@@ -56,17 +58,19 @@ export function Container({
 
   return (
     <Pane style={{ flexDirection: "column" }}>
-      <TabSelector
-        windows={windows}
-        renderTab={renderTab}
-        selectedId={selectedId}
-        onDragOver={onDragOverTabbar}
-        onDrop={onDropTabbar}
-        onDropTab={onDropTab}
-        onSelectTab={onSelectTab}
-        onDragStartTab={onDragStartWindow(containerId)}
-        onDragOverTab={onDragOverTab}
-      />
+      {showTab &&
+        <TabSelector
+          windows={windows}
+          renderTab={renderTab}
+          selectedId={selectedId}
+          onDragOver={onDragOverTabbar}
+          onDrop={onDropTabbar}
+          onDropTab={onDropTab}
+          onSelectTab={onSelectTab}
+          onDragStartTab={onDragStartWindow(containerId)}
+          onDragOverTab={onDragOverTab}
+        />
+      }
       <Pane style={{ flex: 1, background: "white", overflowY: "auto" }}>
         {selectedId && renderWindow(selectedId)}
       </Pane>
