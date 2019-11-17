@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 export function HitArea(props: {
   name: string;
@@ -7,6 +7,26 @@ export function HitArea(props: {
   onDrag: any;
   color?: string;
 }) {
+  // Use rendering context id
+  const [uid] = useState(Math.random().toString());
+
+  const [dragging, setDragging] = useState(false);
+  const onDragStart = useCallback(
+    ev => {
+      setDragging(true);
+      props.onDragStart(ev);
+    },
+    [props.onDragStart]
+  );
+
+  const onDragEnd = useCallback(
+    ev => {
+      setDragging(false);
+      props.onDragEnd(ev);
+    },
+    [props.onDragEnd]
+  );
+
   return (
     <div
       style={{
@@ -18,32 +38,24 @@ export function HitArea(props: {
         backgroundColor: props.color || "gray"
       }}
     >
-      <TranparentHitRegion
-        onDragStart={props.onDragStart}
-        onDragEnd={props.onDragEnd}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `.${uid}:active{cursor:grabbing}`
+        }}
+      />
+      <div
+        className={uid}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         onDrag={props.onDrag}
+        draggable
+        style={{
+          cursor: "grab",
+          opacity: 0,
+          width: "100%",
+          height: "100%"
+        }}
       />
     </div>
-  );
-}
-
-function TranparentHitRegion(props: {
-  onDragStart: any;
-  onDragEnd: any;
-  onDrag: any;
-}) {
-  return (
-    <div
-      onDragStart={props.onDragStart}
-      onDragEnd={props.onDragEnd}
-      onDrag={props.onDrag}
-      draggable
-      style={{
-        opacity: 0,
-        cursor: "grab",
-        width: "100%",
-        height: "100%"
-      }}
-    />
   );
 }

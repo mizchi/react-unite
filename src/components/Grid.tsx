@@ -16,16 +16,6 @@ export type GridAreaProps = {
   children: any;
 };
 
-// export const Grid: React.ComponentClass<GridProps> = styled.div`
-//   display: grid;
-//   width: ${(p: GridProps) => p.width || "100%"};
-//   height: ${(p: GridProps) => p.height || "100%"};
-//   grid-template-columns: ${(p: GridProps) => p.columns.join(" ")};
-//   grid-template-rows: ${(p: GridProps) => p.rows.join(" ")};
-//   grid-template-areas: ${(p: GridProps) =>
-//     p.areas.map(row => "'" + row.join(" ") + "'").join(" ")};
-// `;
-
 export const Grid = React.memo(function Grid(props: GridProps) {
   return (
     <div

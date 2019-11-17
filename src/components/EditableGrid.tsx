@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { GridData } from "../types";
 import { Grid } from "./Grid";
 import { buildEditableGridData } from "../api/grid";
@@ -18,6 +18,8 @@ type Props = {
   showCrossPoint?: boolean;
   hideOnResize?: boolean;
   onChangeGridData?: (data: GridData) => void;
+  onDragStart?: Function;
+  onDragEnd?: Function;
 };
 
 export function EditableGrid({
@@ -32,6 +34,8 @@ export function EditableGrid({
   showVertical = true,
   hideOnResize = false,
   onChangeGridData,
+  onDragStart,
+  onDragEnd,
   children
 }: Props) {
   const m = columns.length;
@@ -53,6 +57,8 @@ export function EditableGrid({
       hideOnResize={hideOnResize}
       spacerSize={spacerSize}
       onChangeGridData={onChangeGridData}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
     >
       {children}
     </EditableGridInner>
@@ -67,6 +73,8 @@ type InnerProps = {
   showHorizontal: boolean;
   showCrossPoint: boolean;
   hideOnResize: boolean;
+  onDragStart?: Function;
+  onDragEnd?: Function;
   onChangeGridData?: (data: GridData) => void;
 };
 
@@ -80,7 +88,7 @@ type HoldingController = {
   startColumns: number[];
 };
 
-const EditableGridInner = ({
+function EditableGridInner({
   original,
   children,
   spacerSize,
@@ -88,8 +96,10 @@ const EditableGridInner = ({
   showHorizontal,
   showVertical,
   hideOnResize,
+  onDragStart: parentOnDragStart,
+  onDragEnd: parentOnDragEnd,
   onChangeGridData
-}: InnerProps) => {
+}: InnerProps) {
   // state
 
   const [semanticRows, setSemanticRows] = useState<string[]>(original.rows);
@@ -121,76 +131,80 @@ const EditableGridInner = ({
       startRows: semanticRows.map(pixelToNumber),
       startColumns: semanticColumns.map(pixelToNumber)
     });
+    parentOnDragStart?.();
   };
 
-  const onDragEnd = () => {
+  const onDragEnd = useCallback(() => {
     setHolding(null);
-    onChangeGridData &&
-      onChangeGridData({
-        ...original,
-        rows: semanticRows,
-        columns: semanticColumns
-      });
-  };
+    onChangeGridData?.({
+      ...original,
+      rows: semanticRows,
+      columns: semanticColumns
+    });
+    parentOnDragEnd?.();
+  }, [original, semanticRows, semanticColumns]);
 
-  const onDrag = (event: any) => {
-    if (holding) {
-      const {
-        type,
-        row: i,
-        column: j,
-        initialX,
-        initialY,
-        startRows: lastRows,
-        startColumns: lastColumns
-      } = holding;
+  const onDrag = useCallback(
+    (event: any) => {
+      if (holding) {
+        const {
+          type,
+          row: i,
+          column: j,
+          initialX,
+          initialY,
+          startRows: lastRows,
+          startColumns: lastColumns
+        } = holding;
 
-      if (type === "v" || type === "c") {
-        const dx = event.pageX - initialX;
-        const leftX = lastColumns[j] + dx;
-        const rightX = lastColumns[j + 1] - dx;
-        if (leftX > 0 && rightX > 0) {
-          const newColumns = lastColumns
-            .map((val, idx) => {
-              if (idx === j) {
-                return leftX;
-              } else if (idx === j + 1) {
-                return rightX;
-              } else {
-                return val;
-              }
-            })
-            .map(numberToPixel);
+        if (type === "v" || type === "c") {
+          const dx = event.pageX - initialX;
+          const leftX = lastColumns[j] + dx;
+          const rightX = lastColumns[j + 1] - dx;
+          if (leftX > 0 && rightX > 0) {
+            const newColumns = lastColumns
+              .map((val, idx) => {
+                if (idx === j) {
+                  return leftX;
+                } else if (idx === j + 1) {
+                  return rightX;
+                } else {
+                  return val;
+                }
+              })
+              .map(numberToPixel);
 
-          if (newColumns.join("") !== semanticColumns.join("")) {
-            setSemanticColumns(newColumns);
+            if (newColumns.join("") !== semanticColumns.join("")) {
+              setSemanticColumns(newColumns);
+            }
+          }
+        }
+
+        if (type === "h" || type === "c") {
+          const dy = event.pageY - initialY;
+          const upperX = lastRows[i] + dy;
+          const bottomX = lastRows[i + 1] - dy;
+          if (upperX > 0 && bottomX > 0) {
+            const newRows = lastRows
+              .map((val, idx) => {
+                if (idx === i) {
+                  return upperX;
+                } else if (idx === i + 1) {
+                  return bottomX;
+                } else {
+                  return val;
+                }
+              })
+              .map(numberToPixel);
+            if (newRows.join("") !== semanticRows.join("")) {
+              setSemanticRows(newRows);
+            }
           }
         }
       }
-
-      if (type === "h" || type === "c") {
-        const dy = event.pageY - initialY;
-        const upperX = lastRows[i] + dy;
-        const bottomX = lastRows[i + 1] - dy;
-        if (upperX > 0 && bottomX > 0) {
-          const newRows = lastRows
-            .map((val, idx) => {
-              if (idx === i) {
-                return upperX;
-              } else if (idx === i + 1) {
-                return bottomX;
-              } else {
-                return val;
-              }
-            })
-            .map(numberToPixel);
-          if (newRows.join("") !== semanticRows.join("")) {
-            setSemanticRows(newRows);
-          }
-        }
-      }
-    }
-  };
+    },
+    [holding]
+  );
 
   const showChildren = hideOnResize && holding;
 
@@ -248,4 +262,4 @@ const EditableGridInner = ({
         })}
     </Grid>
   );
-};
+}

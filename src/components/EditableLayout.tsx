@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import * as Layout from "../api/layout";
 import { pixelsToFractions, pixelToNumber } from "../helpers";
 import { GridData, LayoutData, WindowData } from "../types";
-import { Container } from "./Container";
+import { WindowListContainer } from "./WindowListContainer";
 import { EditableGrid } from "./EditableGrid";
 import { DragContext, DragContextValue } from "../contexts/DragContext";
 import { GridArea } from "./Grid";
@@ -11,6 +11,9 @@ export function EditableLayout(props: {
   width: number | string;
   height: number | string;
   layout: LayoutData;
+  spacerSize?: number;
+  onDragStart?: Function;
+  onDragEnd?: Function;
   renderWindow: (data: WindowData) => React.ReactNode;
   renderTab: (data: WindowData) => React.ReactNode;
   onChangeLayout?: (data: LayoutData) => void;
@@ -49,32 +52,37 @@ export function EditableLayout(props: {
     }
   };
 
-  const onDropWindow = useCallback((
-    dropContainerId: string,
-    dropWindowId: string | null
-  ) => (ev: DragEvent) => {
-    ev.stopPropagation(); // stop parent tabbar on drop
-    if (dragContextValue) {
-      const newLayout = Layout.moveWindowToContainer(
-        layout,
-        dragContextValue.windowId,
-        dragContextValue.containerId,
-        dropWindowId,
-        dropContainerId
-      );
-      setDragContext(null);
-      setLayout(newLayout);
-    }
-  }, [layout, dragContextValue]);
+  const onDropWindow = useCallback(
+    (dropContainerId: string, dropWindowId: string | null) => (
+      ev: DragEvent
+    ) => {
+      ev.stopPropagation(); // stop parent tabbar on drop
+      if (dragContextValue) {
+        const newLayout = Layout.moveWindowToContainer(
+          layout,
+          dragContextValue.windowId,
+          dragContextValue.containerId,
+          dropWindowId,
+          dropContainerId
+        );
+        setDragContext(null);
+        setLayout(newLayout);
+      }
+    },
+    [layout, dragContextValue]
+  );
 
-  const onChangeGridData = useCallback((data: GridData) => {
-    const newGrid = {
-      ...data,
-      rows: pixelsToFractions(data.rows),
-      columns: pixelsToFractions(data.columns)
-    };
-    setLayout({ ...layout, grid: newGrid });
-  }, [layout]);
+  const onChangeGridData = useCallback(
+    (data: GridData) => {
+      const newGrid = {
+        ...data,
+        rows: pixelsToFractions(data.rows),
+        columns: pixelsToFractions(data.columns)
+      };
+      setLayout({ ...layout, grid: newGrid });
+    },
+    [layout]
+  );
 
   return (
     <DragContext.Provider value={dragContextValue}>
@@ -82,15 +90,17 @@ export function EditableLayout(props: {
         key={`${props.width}-${props.height}`}
         width={pixelToNumber(props.width)}
         height={pixelToNumber(props.height)}
-        spacerSize={8}
+        spacerSize={props.spacerSize ?? 8}
         onChangeGridData={onChangeGridData}
+        onDragStart={props.onDragStart}
+        onDragEnd={props.onDragEnd}
         {...layout.grid}
       >
         {layout.containers.map(container => {
           const windows = container.windowIds.map(tid => layout.windowMap[tid]);
           return (
             <GridArea name={container.id} key={container.id}>
-              <Container
+              <WindowListContainer
                 showTab={container.showTab ?? true}
                 containerId={container.id}
                 windows={windows}
@@ -103,7 +113,7 @@ export function EditableLayout(props: {
                   if (id) {
                     return props.renderWindow(layout.windowMap[id]);
                   } else {
-                    return [];
+                    return <></>;
                   }
                 }}
               />

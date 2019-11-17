@@ -1,6 +1,6 @@
 import "./elements";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import {
   LayoutData,
@@ -62,7 +62,11 @@ const initialLayoutData: LayoutData = {
 const childGridData = {
   rows: ["1fr", "2fr", "1fr"],
   columns: ["100px", "1fr", "1fr", "100px"],
-  areas: [["a", "b", "c", "d"], ["e", "b", "g", "d"], ["j", "k", "l", "l"]]
+  areas: [
+    ["a", "b", "c", "d"],
+    ["e", "b", "g", "d"],
+    ["j", "k", "l", "l"]
+  ]
 };
 
 function X() {
@@ -70,13 +74,21 @@ function X() {
     console.log("mount x");
     return () => {
       console.log("unmount x");
-    }
-  }, [])
-  return <div>x</div>
+    };
+  }, []);
+  return <div>x</div>;
 }
 
 const UniteEditor = () => {
   const [grid, setGrid] = useState(childGridData);
+  const [dragging, setDragging] = useState(false);
+  const onDragStart = useCallback(() => {
+    setDragging(true);
+  }, []);
+  const onDragEnd = useCallback(() => {
+    setDragging(false);
+  }, []);
+
   return (
     <Windowed>
       {(width, height) => (
@@ -84,10 +96,15 @@ const UniteEditor = () => {
           width={width}
           height={height}
           layout={initialLayoutData}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
           renderTab={data => {
             return <span>{data.displayName}</span>;
           }}
           renderWindow={win => {
+            if (dragging) {
+              return <>...</>;
+            }
             if (win.id === "#project") {
               return (
                 <x-view style={{ width: "100%", height: "100%" }}>
@@ -172,7 +189,7 @@ function Scene(props: {
       {(width, height) => {
         return (
           <EditableGrid
-            key={`${width}-${height}`}
+            // key={`${width}-${height}`}
             width={width}
             height={height}
             spacerSize={10}
