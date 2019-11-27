@@ -1,4 +1,6 @@
 export type GridData = {
+  fixedColumns?: (string | boolean)[];
+  fixedRows?: (string | boolean)[];
   columns: string[];
   rows: string[];
   areas: string[][];

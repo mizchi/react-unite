@@ -2,10 +2,10 @@ import React, { useCallback, useState } from "react";
 
 export function HitArea(props: {
   name: string;
-  onDragStart: any;
-  onDragEnd: any;
-  onDrag: any;
   color?: string;
+  onDragStart?: any;
+  onDragEnd?: any;
+  onDrag?: any;
 }) {
   // Use rendering context id
   const [uid] = useState(Math.random().toString());

@@ -1,25 +1,132 @@
 import "./elements";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import ReactDOM from "react-dom";
 import {
   LayoutData,
   Windowed,
-  EditableLayout,
   Fill,
   EditableGrid,
   GridArea,
   GridData,
-  pixelsToFractions
+  pixelsToFractions,
+  LayoutSystem,
+  WindowManager
 } from "../src";
+
+const GridContext = React.createContext<[GridData, (d: GridData) => void]>(
+  null as any
+);
+
+function UniteEditor() {
+  const [grid, setGrid] = useState<GridData>(childGridData);
+
+  return (
+    <>
+      <GridContext.Provider value={[grid, setGrid]}>
+        <Windowed>
+          {(width, height) => (
+            <LayoutSystem
+              width={width}
+              height={height}
+              windowManager={windowManager}
+              initialLayout={initialLayoutData}
+            />
+          )}
+        </Windowed>
+      </GridContext.Provider>
+    </>
+  );
+}
+
+function Inspector() {
+  const [grid] = useContext(GridContext);
+  return (
+    <x-view style={{ height: "100%", width: "100%", padding: 13 }}>
+      <h1>Inspector</h1>
+      <x-view>
+        <pre>
+          areas:
+          <code>{JSON.stringify(grid.areas)}</code>
+          <br />
+          rows: <code>{JSON.stringify(grid.rows)}</code>
+          <br />
+          columns: <code>{JSON.stringify(grid.columns)}</code>
+        </pre>
+      </x-view>
+      <hr />
+      <x-view>
+        <pre>
+          <code>
+            CSS Expression
+            {`
+.grid {
+  grid-template-areas: ${grid.areas
+    .map(a => a.join(" "))
+    .map(a => `'${a}'`)
+    .join(" ")};
+  grid-template-rows: ${grid.rows.join(" ")};
+  grid-template-columns: ${grid.columns.join(" ")};
+}          
+          `}
+          </code>
+        </pre>
+      </x-view>
+    </x-view>
+  );
+}
+
+function Scene() {
+  const [grid, setGrid] = useContext(GridContext);
+  const onChangeGridData = useCallback(newGrid => {
+    setGrid(newGrid);
+  }, []);
+  return (
+    <Fill>
+      {(width, height) => {
+        return (
+          <EditableGrid
+            width={width}
+            height={height}
+            spacerSize={10}
+            rows={grid.rows}
+            columns={grid.columns}
+            fixedColumns={grid.fixedColumns}
+            fixedRows={grid.fixedRows}
+            areas={grid.areas}
+            onChangeGridData={onChangeGridData}
+          >
+            <GridArea name="a">
+              <x-pane>a</x-pane>
+            </GridArea>
+            <GridArea name="b">
+              <x-pane>b</x-pane>
+            </GridArea>
+            <GridArea name="d">
+              <x-pane>d</x-pane>
+            </GridArea>
+            <GridArea name="f">
+              <x-pane>f</x-pane>
+            </GridArea>
+            <GridArea name="h">
+              <x-pane>h</x-pane>
+            </GridArea>
+            <GridArea name="l">
+              <x-pane>l</x-pane>
+            </GridArea>
+          </EditableGrid>
+        );
+      }}
+    </Fill>
+  );
+}
 
 const initialLayoutData: LayoutData = {
   grid: {
-    // TODO: implement resizable
-    // rowsResizables: [false, true, true],
-    // columnsResizables: [false, true],
     columns: ["1fr", "1fr"],
+    fixedColumns: [false, false],
     rows: ["40px", "1fr", "1fr"],
+    fixedRows: [true, false, false],
     areas: [
       ["header", "header"],
       ["preview", "inspector"],
@@ -59,9 +166,11 @@ const initialLayoutData: LayoutData = {
   ]
 };
 
-const childGridData = {
+const childGridData: GridData = {
   rows: ["1fr", "2fr", "1fr"],
+  fixedRows: [true, false, false],
   columns: ["100px", "1fr", "1fr", "100px"],
+  fixedColumns: [true, false, true, true],
   areas: [
     ["a", "b", "c", "d"],
     ["e", "b", "g", "d"],
@@ -69,158 +178,8 @@ const childGridData = {
   ]
 };
 
-function X() {
-  useEffect(() => {
-    console.log("mount x");
-    return () => {
-      console.log("unmount x");
-    };
-  }, []);
-  return <div>x</div>;
-}
-
-const UniteEditor = () => {
-  const [grid, setGrid] = useState(childGridData);
-  const [dragging, setDragging] = useState(false);
-  const onDragStart = useCallback(() => {
-    setDragging(true);
-  }, []);
-  const onDragEnd = useCallback(() => {
-    setDragging(false);
-  }, []);
-
-  return (
-    <Windowed>
-      {(width, height) => (
-        <EditableLayout
-          width={width}
-          height={height}
-          layout={initialLayoutData}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-          renderTab={data => {
-            return <span>{data.displayName}</span>;
-          }}
-          renderWindow={win => {
-            if (dragging) {
-              return <>...</>;
-            }
-            if (win.id === "#project") {
-              return (
-                <x-view style={{ width: "100%", height: "100%" }}>
-                  Project
-                  <X />
-                </x-view>
-              );
-            }
-            if (win.id === "#scene") {
-              return (
-                <Scene
-                  grid={grid}
-                  onChangeGrid={data => {
-                    const newRows = pixelsToFractions(data.rows);
-                    const newColumns = pixelsToFractions(data.columns);
-                    setGrid({ ...data, rows: newRows, columns: newColumns });
-                  }}
-                />
-              );
-            }
-
-            if (win.id === "#inspector") {
-              return <Inspector grid={grid} />;
-            }
-            return (
-              <x-pane>
-                {win.id}: {win.displayName}
-              </x-pane>
-            );
-          }}
-        />
-      )}
-    </Windowed>
-  );
-};
-
+const windowManager = new WindowManager();
+windowManager.registerWindow("#scene", Scene as any);
+windowManager.registerWindow("#inspector", Inspector as any);
 const root = document.querySelector(".root");
 ReactDOM.render(<UniteEditor />, root);
-
-function Inspector(props: { grid: GridData }) {
-  return (
-    <x-view style={{ height: "100%", width: "100%", padding: 13 }}>
-      <h1>Inspector</h1>
-      <x-view>
-        <pre>
-          areas:
-          <code>{JSON.stringify(props.grid.areas)}</code>
-          <br />
-          rows: <code>{JSON.stringify(props.grid.rows)}</code>
-          <br />
-          columns: <code>{JSON.stringify(props.grid.columns)}</code>
-        </pre>
-      </x-view>
-      <hr />
-      <x-view>
-        <pre>
-          <code>
-            CSS Expression
-            {`
-.grid {
-  grid-template-areas: ${props.grid.areas
-    .map(a => a.join(" "))
-    .map(a => `'${a}'`)
-    .join(" ")};
-  grid-template-rows: ${props.grid.rows.join(" ")};
-  grid-template-columns: ${props.grid.columns.join(" ")};
-}          
-          `}
-          </code>
-        </pre>
-      </x-view>
-    </x-view>
-  );
-}
-
-function Scene(props: {
-  grid: GridData;
-  onChangeGrid: (dath: GridData) => void;
-}) {
-  return (
-    <Fill>
-      {(width, height) => {
-        return (
-          <EditableGrid
-            // key={`${width}-${height}`}
-            width={width}
-            height={height}
-            spacerSize={10}
-            rows={props.grid.rows}
-            columns={props.grid.columns}
-            areas={props.grid.areas}
-            onChangeGridData={data => {
-              props.onChangeGrid(data);
-            }}
-          >
-            <GridArea name="a">
-              <x-pane>a</x-pane>
-            </GridArea>
-            <GridArea name="b">
-              <x-pane>b</x-pane>
-            </GridArea>
-            <GridArea name="d">
-              <x-pane>d</x-pane>
-            </GridArea>
-            <GridArea name="f">
-              <x-pane>f</x-pane>
-            </GridArea>
-            <GridArea name="h">
-              <x-pane>h</x-pane>
-            </GridArea>
-            <GridArea name="l">
-              <x-pane>l</x-pane>
-            </GridArea>
-          </EditableGrid>
-        );
-      }}
-    </Fill>
-  );
-}

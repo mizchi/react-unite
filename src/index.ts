@@ -4,6 +4,7 @@ export { Grid, GridArea } from "./components/Grid";
 export { WindowListContainer as Container } from "./components/WindowListContainer";
 export { Windowed } from "./components/Windowed";
 export { Fill } from "./components/Fill";
+export * from "./components/LayoutSystem";
 
 export * from "./helpers";
 export * from "./types";

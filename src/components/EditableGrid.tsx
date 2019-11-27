@@ -10,7 +10,10 @@ type Props = {
   height: number | string;
   spacerSize: number;
   rows: string[];
+  fixedRows?: (string | boolean)[];
   columns: string[];
+  fixedColumns?: (string | boolean)[];
+
   areas: string[][];
   children: React.ReactNode;
   showVertical?: boolean;
@@ -28,6 +31,8 @@ export function EditableGrid({
   spacerSize,
   rows,
   columns,
+  fixedRows,
+  fixedColumns,
   areas,
   showCrossPoint = true,
   showHorizontal = true,
@@ -43,6 +48,8 @@ export function EditableGrid({
   const w = pixelToNumber(width) - spacerSize * (m - 1);
   const h = pixelToNumber(height) - spacerSize * (n - 1);
   const original = {
+    fixedRows,
+    fixedColumns,
     rows: exprsToPixels(rows, h),
     columns: exprsToPixels(columns, w),
     areas
@@ -78,8 +85,14 @@ type InnerProps = {
   onChangeGridData?: (data: GridData) => void;
 };
 
+enum HoldingType {
+  Vertical = "v",
+  Horizontal = "h",
+  Center = "c"
+}
+
 type HoldingController = {
-  type: "v" | "h" | "c";
+  type: HoldingType;
   row: number;
   column: number;
   initialX: number;
@@ -100,6 +113,7 @@ function EditableGridInner({
   onDragEnd: parentOnDragEnd,
   onChangeGridData
 }: InnerProps) {
+  console.log("editable grid inner", original);
   // state
 
   const [semanticRows, setSemanticRows] = useState<string[]>(original.rows);
@@ -110,7 +124,9 @@ function EditableGridInner({
   const { controllers, ...editable } = buildEditableGridData(
     {
       rows: semanticRows,
+      fixedRows: original.fixedRows,
       columns: semanticColumns,
+      fixedColumns: original.fixedColumns,
       areas: original.areas
     },
     spacerSize
@@ -118,14 +134,16 @@ function EditableGridInner({
 
   const [holding, setHolding] = useState<HoldingController | null>(null);
 
-  const onDragStartFactory = (type: "v" | "h" | "c", i: number, j: number) => (
-    ev: any
-  ) => {
+  const onDragStartFactory = (
+    type: HoldingType,
+    row: number,
+    column: number
+  ) => (ev: any) => {
     ev.dataTransfer.effectAllowed = "move";
     setHolding({
       type,
-      row: i,
-      column: j,
+      row,
+      column,
       initialX: ev.pageX,
       initialY: ev.pageY,
       startRows: semanticRows.map(pixelToNumber),
@@ -157,7 +175,7 @@ function EditableGridInner({
           startColumns: lastColumns
         } = holding;
 
-        if (type === "v" || type === "c") {
+        if (type === HoldingType.Vertical || type === HoldingType.Center) {
           const dx = event.pageX - initialX;
           const leftX = lastColumns[j] + dx;
           const rightX = lastColumns[j + 1] - dx;
@@ -222,39 +240,77 @@ function EditableGridInner({
 
       {/* show controllers */}
       {showVertical &&
-        controllers.verticals.map(([i, j]) => {
-          const name = `v-${i}-${j}`;
+        controllers.verticals.map(([row, column]) => {
+          const name = `v-${row}-${column}`;
+          if (original.fixedColumns) {
+            if (original.fixedColumns[column]) {
+              return (
+                <HitArea
+                  key={name}
+                  name={name}
+                  color="rgba(255,0,0,0.5)"
+                  onDragStart={() => {}}
+                  onDragEnd={() => {}}
+                  onDrag={() => {}}
+                />
+              );
+            }
+          }
+
           return (
             <HitArea
               key={name}
               name={name}
-              onDragStart={onDragStartFactory("v", i, j)}
+              onDragStart={onDragStartFactory(
+                HoldingType.Vertical,
+                row,
+                column
+              )}
               onDragEnd={onDragEnd}
               onDrag={onDrag}
             />
           );
         })}
       {showHorizontal &&
-        controllers.horizontals.map(([i, j]) => {
-          const name = `h-${i}-${j}`;
+        controllers.horizontals.map(([row, column]) => {
+          const name = `h-${row}-${column}`;
+          if (original.fixedRows) {
+            if (original.fixedRows[row]) {
+              // TODO: Fixed
+              return (
+                <HitArea
+                  key={name}
+                  name={name}
+                  color="rgba(255,0,0,0.5)"
+                  onDragStart={() => {}}
+                  onDragEnd={() => {}}
+                  onDrag={() => {}}
+                />
+              );
+            }
+          }
           return (
             <HitArea
               key={name}
               name={name}
-              onDragStart={onDragStartFactory("h", i, j)}
+              onDragStart={onDragStartFactory(
+                HoldingType.Horizontal,
+                row,
+                column
+              )}
               onDragEnd={onDragEnd}
               onDrag={onDrag}
             />
           );
         })}
       {showCrossPoint &&
-        controllers.crosses.map(([i, j]) => {
-          const name = `c-${i}-${j}`;
+        controllers.crosses.map(([row, column]) => {
+          const name = `c-${row}-${column}`;
           return (
             <HitArea
               key={name}
               name={name}
-              onDragStart={onDragStartFactory("c", i, j)}
+              onDragStart={onDragStartFactory(HoldingType.Center, row, column)}
               onDragEnd={onDragEnd}
               onDrag={onDrag}
             />

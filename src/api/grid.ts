@@ -70,6 +70,8 @@ export function buildEditableGridData(
   return {
     rows,
     columns,
+    fixedColumns: original.fixedColumns,
+    fixedRows: original.fixedRows,
     areas,
     controllers
   };
