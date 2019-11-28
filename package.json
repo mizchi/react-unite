@@ -1,7 +1,7 @@
 {
   "name": "react-unite",
   "license": "MIT",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "./dist/index.d.ts",
