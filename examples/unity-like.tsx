@@ -1,6 +1,6 @@
 import "./elements";
 
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import ReactDOM from "react-dom";
 import {
   LayoutData,
