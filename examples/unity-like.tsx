@@ -1,17 +1,16 @@
 import "./elements";
 
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useRef } from "react";
 import ReactDOM from "react-dom";
 import {
   LayoutData,
-  Windowed,
-  Fill,
   EditableGrid,
   GridArea,
   GridData,
-  pixelsToFractions,
   LayoutSystem,
-  WindowManager
+  WindowManager,
+  useElementSize,
+  useWindowSize
 } from "../src";
 
 const GridContext = React.createContext<[GridData, (d: GridData) => void]>(
@@ -20,22 +19,17 @@ const GridContext = React.createContext<[GridData, (d: GridData) => void]>(
 
 function UniteEditor() {
   const [grid, setGrid] = useState<GridData>(childGridData);
+  const size = useWindowSize();
 
   return (
-    <>
-      <GridContext.Provider value={[grid, setGrid]}>
-        <Windowed>
-          {(width, height) => (
-            <LayoutSystem
-              width={width}
-              height={height}
-              windowManager={windowManager}
-              initialLayout={initialLayoutData}
-            />
-          )}
-        </Windowed>
-      </GridContext.Provider>
-    </>
+    <GridContext.Provider value={[grid, setGrid]}>
+      <LayoutSystem
+        width={size.width}
+        height={size.height}
+        windowManager={windowManager}
+        initialLayout={initialLayoutData}
+      />
+    </GridContext.Provider>
   );
 }
 
@@ -78,47 +72,47 @@ function Inspector() {
 }
 
 function Scene() {
+  const ref = useRef<HTMLDivElement>(null);
+  const size = useElementSize(ref);
   const [grid, setGrid] = useContext(GridContext);
   const onChangeGridData = useCallback(newGrid => {
     setGrid(newGrid);
   }, []);
   return (
-    <Fill>
-      {(width, height) => {
-        return (
-          <EditableGrid
-            width={width}
-            height={height}
-            spacerSize={10}
-            rows={grid.rows}
-            columns={grid.columns}
-            fixedColumns={grid.fixedColumns}
-            fixedRows={grid.fixedRows}
-            areas={grid.areas}
-            onChangeGridData={onChangeGridData}
-          >
-            <GridArea name="a">
-              <x-pane>a</x-pane>
-            </GridArea>
-            <GridArea name="b">
-              <x-pane>b</x-pane>
-            </GridArea>
-            <GridArea name="d">
-              <x-pane>d</x-pane>
-            </GridArea>
-            <GridArea name="f">
-              <x-pane>f</x-pane>
-            </GridArea>
-            <GridArea name="h">
-              <x-pane>h</x-pane>
-            </GridArea>
-            <GridArea name="l">
-              <x-pane>l</x-pane>
-            </GridArea>
-          </EditableGrid>
-        );
-      }}
-    </Fill>
+    <div ref={ref} style={{ width: "100%", height: "100%" }}>
+      {size && (
+        <EditableGrid
+          width={size.width}
+          height={size.height}
+          spacerSize={10}
+          rows={grid.rows}
+          columns={grid.columns}
+          fixedColumns={grid.fixedColumns}
+          fixedRows={grid.fixedRows}
+          areas={grid.areas}
+          onChangeGridData={onChangeGridData}
+        >
+          <GridArea name="a">
+            <x-pane>a</x-pane>
+          </GridArea>
+          <GridArea name="b">
+            <x-pane>b</x-pane>
+          </GridArea>
+          <GridArea name="d">
+            <x-pane>d</x-pane>
+          </GridArea>
+          <GridArea name="f">
+            <x-pane>f</x-pane>
+          </GridArea>
+          <GridArea name="h">
+            <x-pane>h</x-pane>
+          </GridArea>
+          <GridArea name="l">
+            <x-pane>l</x-pane>
+          </GridArea>
+        </EditableGrid>
+      )}
+    </div>
   );
 }
 

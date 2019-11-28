@@ -1,14 +1,19 @@
 import { useLayoutEffect, useState } from "react";
 import { debounce } from "../helpers";
+type number_or_string = number | string;
+type Size = {
+  width: number_or_string;
+  height: number_or_string;
+};
 
-export function useWindowSize(): [string | number, string | number] {
-  const [state, setState] = useState<[string | number, string | number]>([
-    window.innerWidth,
-    window.innerHeight
-  ]);
+export function useWindowSize(): Size {
+  const [state, setState] = useState<Size>({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
   useLayoutEffect(() => {
     const onresize = debounce(() =>
-      setState([window.innerWidth, window.innerHeight])
+      setState({ width: window.innerWidth, height: window.innerHeight })
     );
     window.addEventListener("resize", onresize);
     return () => window.removeEventListener("resize", onresize);
@@ -16,24 +21,14 @@ export function useWindowSize(): [string | number, string | number] {
   return state;
 }
 
-type number_or_string = number | string;
-type Size = {
-  width: number_or_string;
-  height: number_or_string;
-};
-
 // Edge does not have ResizeObserver
 declare var ResizeObserver: any;
-export function useFilledSize(
+export function useElementSize(
   ref: React.RefObject<HTMLDivElement>
 ): Size | null {
   const [state, setState] = useState<Size | null>(null as any);
   useLayoutEffect(() => {
     if (ref.current && (window as any)["ResizeObserver"]) {
-      // set initial state
-      const s = window.getComputedStyle(ref.current);
-      setState({ width: s.width, height: s.height });
-
       const observer = (entries: any, _observer: any) => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
