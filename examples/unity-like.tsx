@@ -53,6 +53,7 @@ function Inspector() {
           <br />
           columns: <code>{JSON.stringify(grid.columns)}</code>
         </pre>
+        yar
       </x-view>
       <hr />
       <x-view>
