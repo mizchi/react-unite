@@ -34,13 +34,13 @@ function WindowSelector(props: { data: WindowData }) {
     return (
       <div
         style={{
+          outline: "10px solid white",
           boxSizing: "border-box",
-          width: "95%",
-          height: "95%",
-          backgroundColor: "#aaa"
-          // padding: 10
+          backgroundColor: "#aaa",
+          width: "100%",
+          height: "100%"
         }}
-      />
+      ></div>
     );
   }
   const Current = windowManager.getWindow(props.data.id);
@@ -112,7 +112,7 @@ export class WindowManager<WindowID = string> {
   private _componentMap: Map<WindowID, React.ComponentType<any>> = new Map();
   registerWindow(
     windowId: WindowID,
-    loader: React.LazyExosticComponent<any> | React.FC<any>
+    loader: React.LazyExoticComponent<any> | React.FC<any>
   ) {
     this._componentMap.set(windowId, loader);
     this._change();

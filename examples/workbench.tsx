@@ -12,12 +12,14 @@ import {
   useElementSize,
   useWindowSize
 } from "../src";
+import Modal from "react-modal";
+Modal.setAppElement("#modal");
 
 const GridContext = React.createContext<[GridData, (d: GridData) => void]>(
   null as any
 );
 
-function UniteEditor() {
+function Workbench() {
   const [grid, setGrid] = useState<GridData>(childGridData);
   const size = useWindowSize();
 
@@ -70,6 +72,67 @@ function Inspector() {
     </x-view>
   );
 }
+function Scene_A_Inner() {
+  const ref = useRef(null);
+  const size = useElementSize(ref);
+  const grid = childGridData;
+  return (
+    <div style={{ width: "100%", height: "100%" }} ref={ref}>
+      {size && (
+        <EditableGrid
+          width={size.width}
+          height={size.height}
+          spacerSize={10}
+          rows={grid.rows}
+          columns={grid.columns}
+          fixedColumns={grid.fixedColumns}
+          fixedRows={grid.fixedRows}
+          areas={grid.areas}
+          // onChangeGridData={onChangeGridData}
+        >
+          <GridArea name="a">
+            <Scene_A />
+          </GridArea>
+          <GridArea name="b">
+            <x-pane>b</x-pane>
+          </GridArea>
+          <GridArea name="d">
+            <x-pane>d</x-pane>
+          </GridArea>
+          <GridArea name="f">
+            <x-pane>f</x-pane>
+          </GridArea>
+          <GridArea name="h">
+            <x-pane>h</x-pane>
+          </GridArea>
+          <GridArea name="l">
+            <x-pane>l</x-pane>
+          </GridArea>
+        </EditableGrid>
+      )}
+    </div>
+  );
+}
+function Scene_A() {
+  const ref = useRef(null);
+  const size = useElementSize(ref);
+  const [opened, setOpened] = useState(false);
+  const grid = childGridData;
+  console.log(size);
+  return (
+    <x-pane>
+      <button onClick={() => setOpened(true)}>Open</button>
+      <Modal
+        isOpen={opened}
+        onRequestClose={() => {
+          setOpened(false);
+        }}
+      >
+        <Scene_A_Inner />
+      </Modal>
+    </x-pane>
+  );
+}
 
 function Scene() {
   const ref = useRef<HTMLDivElement>(null);
@@ -93,7 +156,7 @@ function Scene() {
           onChangeGridData={onChangeGridData}
         >
           <GridArea name="a">
-            <x-pane>a</x-pane>
+            <Scene_A />
           </GridArea>
           <GridArea name="b">
             <x-pane>b</x-pane>
@@ -177,4 +240,4 @@ const windowManager = new WindowManager();
 windowManager.registerWindow("#scene", Scene as any);
 windowManager.registerWindow("#inspector", Inspector as any);
 const root = document.querySelector(".root");
-ReactDOM.render(<UniteEditor />, root);
+ReactDOM.render(<Workbench />, root);

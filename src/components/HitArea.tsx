@@ -1,12 +1,14 @@
 import React, { useCallback, useState } from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 export function HitArea(props: {
   name: string;
-  color?: string;
   onDragStart?: any;
   onDragEnd?: any;
   onDrag?: any;
+  disabled: boolean;
 }) {
+  const { uiBaseColor, uiDisabledColor } = useTheme();
   // Use rendering context id
   const [uid] = useState(Math.random().toString());
 
@@ -35,7 +37,8 @@ export function HitArea(props: {
         height: "100%",
         outline: "1px solid white",
         boxSizing: "border-box",
-        backgroundColor: props.color || "gray"
+        // pointerEvents: props.disabled ? "none" : undefined,
+        backgroundColor: props.disabled ? uiDisabledColor : uiBaseColor
       }}
     >
       <style
@@ -48,9 +51,9 @@ export function HitArea(props: {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDrag={props.onDrag}
-        draggable
+        draggable={!props.disabled}
         style={{
-          cursor: "grab",
+          cursor: props.disabled ? undefined : "grab",
           opacity: 0,
           width: "100%",
           height: "100%"

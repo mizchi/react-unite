@@ -2,7 +2,12 @@ import React, { useState, useCallback } from "react";
 import { GridData } from "../types";
 import { Grid } from "./Grid";
 import { buildEditableGridData } from "../api/grid";
-import { exprsToPixels, numberToPixel, pixelToNumber } from "../helpers";
+import {
+  exprsToPixels,
+  numberToPixel,
+  pixelToNumber,
+  pixelsToFractions
+} from "../helpers";
 import { HitArea } from "./HitArea";
 
 type Props = {
@@ -154,11 +159,14 @@ function EditableGridInner({
 
   const onDragEnd = useCallback(() => {
     setHolding(null);
+    const rows = pixelsToFractions(semanticRows);
+    const columns = pixelsToFractions(semanticColumns);
     onChangeGridData?.({
       ...original,
-      rows: semanticRows,
-      columns: semanticColumns
+      rows,
+      columns
     });
+    // console.log("semantic", semanticRows, semanticColumns);
     parentOnDragEnd?.();
   }, [original, semanticRows, semanticColumns]);
 
@@ -242,23 +250,12 @@ function EditableGridInner({
       {showVertical &&
         controllers.verticals.map(([row, column]) => {
           const name = `v-${row}-${column}`;
-          if (original.fixedColumns) {
-            if (original.fixedColumns[column]) {
-              return (
-                <HitArea
-                  key={name}
-                  name={name}
-                  color="rgba(255,0,0,0.5)"
-                  onDragStart={() => {}}
-                  onDragEnd={() => {}}
-                  onDrag={() => {}}
-                />
-              );
-            }
-          }
-
+          const disabled = !!(
+            original.fixedColumns && original.fixedColumns[column]
+          );
           return (
             <HitArea
+              disabled={disabled}
               key={name}
               name={name}
               onDragStart={onDragStartFactory(
@@ -274,25 +271,12 @@ function EditableGridInner({
       {showHorizontal &&
         controllers.horizontals.map(([row, column]) => {
           const name = `h-${row}-${column}`;
-          if (original.fixedRows) {
-            if (original.fixedRows[row]) {
-              // TODO: Fixed
-              return (
-                <HitArea
-                  key={name}
-                  name={name}
-                  color="rgba(255,0,0,0.5)"
-                  onDragStart={() => {}}
-                  onDragEnd={() => {}}
-                  onDrag={() => {}}
-                />
-              );
-            }
-          }
+          const disabled = !!(original.fixedRows && original.fixedRows[row]);
           return (
             <HitArea
               key={name}
               name={name}
+              disabled={disabled}
               onDragStart={onDragStartFactory(
                 HoldingType.Horizontal,
                 row,
@@ -306,10 +290,16 @@ function EditableGridInner({
       {showCrossPoint &&
         controllers.crosses.map(([row, column]) => {
           const name = `c-${row}-${column}`;
+          const vDisabled = !!(
+            original.fixedColumns && original.fixedColumns[column]
+          );
+          const hDisabled = !!(original.fixedRows && original.fixedRows[row]);
+
           return (
             <HitArea
               key={name}
               name={name}
+              disabled={hDisabled || vDisabled}
               onDragStart={onDragStartFactory(HoldingType.Center, row, column)}
               onDragEnd={onDragEnd}
               onDrag={onDrag}

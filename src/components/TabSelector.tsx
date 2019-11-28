@@ -3,10 +3,11 @@ import React, { useState, useContext } from "react";
 import { Pane } from "./Pane";
 import { View } from "./View";
 import { DragContext } from "../contexts/DragContext";
+import { useTheme } from "../contexts/ThemeContext";
 
-const DRAGGING_COLOR = "1px solid rgba(0,0,255, 0.8)";
-const OVERLAY_COLOR = "1px solid rgba(255,0,0, 0.8)";
-const UNOVERLAY_COLOR = "transparent";
+// const DRAGGING_COLOR = "1px solid rgba(0,0,255, 0.8)";
+// const OVERLAY_COLOR = "1px solid rgba(255,0,0, 0.8)";
+// const UNOVERLAY_COLOR = "transparent";
 
 export function TabSelector(props: {
   windows: Array<WindowData>;
@@ -22,6 +23,7 @@ export function TabSelector(props: {
   onDropTab?: (id: string) => (ev: DragEvent) => void;
   renderTab: (data: WindowData) => React.ReactNode;
 }) {
+  const theme = useTheme();
   const [draggingOver, setDraggingOver] = useState(false);
   const drag = useContext(DragContext);
 
@@ -43,11 +45,11 @@ export function TabSelector(props: {
       style={{
         height: 28,
         alignItems: "left",
-        backgroundColor: "#aaa",
+        backgroundColor: theme.uiBaseColor,
         boxSizing: "border-box",
         width: "100%",
         flexDirection: "row",
-        border: drag && draggingOver ? OVERLAY_COLOR : UNOVERLAY_COLOR
+        border: drag && draggingOver ? theme.overlayColor : theme.unoverlayColor
       }}
     >
       {props.windows.map(window => {
@@ -90,6 +92,8 @@ function TabButton(props: {
 
   const drag = useContext(DragContext);
 
+  const theme = useTheme();
+
   return (
     <Pane
       draggable
@@ -120,9 +124,9 @@ function TabButton(props: {
         minWidth: "50px",
         width: 100, // TODO: Fix
         height: "100%",
-        background: props.selected ? "#fff" : "#aaa",
-        outline: drag && dragging ? DRAGGING_COLOR : "none",
-        border: drag && draggingOver ? OVERLAY_COLOR : UNOVERLAY_COLOR
+        background: props.selected ? "white" : theme.uiBaseColor,
+        outline: drag && dragging ? theme.draggingColor : "none",
+        border: drag && draggingOver ? theme.overlayColor : theme.unoverlayColor
       }}
     >
       {props.children}

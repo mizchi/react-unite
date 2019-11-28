@@ -2,13 +2,10 @@ import "./elements";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { LayoutData, Windowed, EditableLayout } from "../src";
+import { LayoutData, EditableLayout, useWindowSize } from "../src";
 
 const initialLayoutData: LayoutData = {
   grid: {
-    // TODO: implement resizable
-    // rowsResizables: [false, true, true],
-    // columnsResizables: [false, true],
     columns: ["1fr", "1fr"],
     rows: ["40px", "1fr", "1fr"],
     areas: [
@@ -48,26 +45,23 @@ const initialLayoutData: LayoutData = {
 };
 
 const UniteEditor = () => {
+  const { width, height } = useWindowSize();
   return (
-    <Windowed>
-      {(width, height) => (
-        <EditableLayout
-          width={width}
-          height={height}
-          layout={initialLayoutData}
-          renderTab={data => {
-            return <span>{data.displayName}</span>;
-          }}
-          renderWindow={win => {
-            return (
-              <x-pane>
-                {win.id}: {win.displayName}
-              </x-pane>
-            );
-          }}
-        />
-      )}
-    </Windowed>
+    <EditableLayout
+      width={width}
+      height={height}
+      layout={initialLayoutData}
+      renderTab={data => {
+        return <span>{data.displayName}</span>;
+      }}
+      renderWindow={win => {
+        return (
+          <x-pane>
+            {win.id}: {win.displayName}
+          </x-pane>
+        );
+      }}
+    />
   );
 };
 

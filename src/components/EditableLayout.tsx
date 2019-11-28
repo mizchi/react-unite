@@ -96,17 +96,17 @@ export function EditableLayout(props: {
         onDragEnd={props.onDragEnd}
         {...layout.grid}
       >
-        {layout.panes.map(container => {
-          const windows = container.windowIds.map(tid => layout.windows[tid]);
+        {layout.panes.map(pane => {
+          const windows = pane.windowIds.map(tid => layout.windows[tid]);
           return (
-            <GridArea name={container.id} key={container.id}>
+            <GridArea name={pane.id} key={pane.id}>
               <WindowListContainer
-                showTab={container.showTab ?? true}
-                containerId={container.id}
+                showTab={pane.showTab ?? true}
+                containerId={pane.id}
                 windows={windows}
                 renderTab={props.renderTab}
-                selectedId={container.selectedId || null}
-                onSelectTab={onSelectTab(container.id)}
+                selectedId={pane.selectedId || null}
+                onSelectTab={onSelectTab(pane.id)}
                 onDragStartWindow={onDragStartWindow}
                 onDropWindow={onDropWindow}
                 renderWindow={(id: string | null) => {

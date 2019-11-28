@@ -1,4 +1,4 @@
-import { interpose, numberToPixel } from "../helpers";
+import { interpose, numberToPixel, pixelToNumber } from "../helpers";
 import { EditbalGridData, GridData, Controllers } from "../types";
 
 export function buildEditableGridData(
