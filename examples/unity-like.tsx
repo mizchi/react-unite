@@ -134,14 +134,14 @@ const initialLayoutData: LayoutData = {
       ["assets", "inspector"]
     ]
   },
-  windowMap: {
+  windows: {
     "#scene": { displayName: "Scene", id: "#scene" },
     "#project": { displayName: "Project", id: "#project" },
     "#hierachy": { displayName: "Hierachy", id: "#hierachy" },
     "#inspector": { displayName: "Inspector", id: "#inspector" },
     "#services": { displayName: "Services", id: "#services" }
   },
-  containers: [
+  panes: [
     {
       // TODO: containerType: tabs | one
       id: "preview",

@@ -17,13 +17,13 @@ export type WindowData = {
 
 export type LayoutData = {
   grid: GridData;
-  containers: ContainerData[];
-  windowMap: {
+  panes: PaneData[];
+  windows: {
     [key: string]: WindowData;
   };
 };
 
-export type ContainerData = {
+export type PaneData = {
   id: string;
   displayName?: string;
   selectedId?: string;

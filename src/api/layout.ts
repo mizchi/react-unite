@@ -1,4 +1,4 @@
-import { LayoutData, ContainerData } from "../types";
+import { LayoutData, PaneData } from "../types";
 
 export function moveWindowToContainer(
   layout: LayoutData,
@@ -9,7 +9,7 @@ export function moveWindowToContainer(
 ): LayoutData {
   if (toContainerId === fromContainerId && toWindowId) {
     // replace windows in container
-    const newConatiners = layout.containers.map(c => {
+    const newConatiners = layout.panes.map(c => {
       if (c.id !== toContainerId) {
         return c;
       }
@@ -25,10 +25,10 @@ export function moveWindowToContainer(
       });
       return { ...c, windowIds: newWindowIds };
     });
-    return { ...layout, containers: newConatiners };
+    return { ...layout, panes: newConatiners };
   } else {
     // send window to other container
-    const newContainers: ContainerData[] = layout.containers.map(c => {
+    const newPanes: PaneData[] = layout.panes.map(c => {
       let ids = c.windowIds;
       let selectedId = c.selectedId;
       if (c.id === toContainerId) {
@@ -44,7 +44,7 @@ export function moveWindowToContainer(
       }
       return { ...c, windowIds: ids, selectedId };
     });
-    return { ...layout, containers: newContainers };
+    return { ...layout, panes: newPanes };
   }
 }
 
@@ -53,12 +53,12 @@ export function selectWindowOnContainer(
   windowId: string,
   containerId: String
 ) {
-  const newContainers = layout.containers.map(c => {
+  const newPanes = layout.panes.map(c => {
     if (containerId === c.id) {
       return { ...c, selectedId: windowId };
     } else {
       return c;
     }
   });
-  return { ...layout, containers: newContainers };
+  return { ...layout, panes: newPanes };
 }

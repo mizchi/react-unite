@@ -96,8 +96,8 @@ export function EditableLayout(props: {
         onDragEnd={props.onDragEnd}
         {...layout.grid}
       >
-        {layout.containers.map(container => {
-          const windows = container.windowIds.map(tid => layout.windowMap[tid]);
+        {layout.panes.map(container => {
+          const windows = container.windowIds.map(tid => layout.windows[tid]);
           return (
             <GridArea name={container.id} key={container.id}>
               <WindowListContainer
@@ -111,7 +111,7 @@ export function EditableLayout(props: {
                 onDropWindow={onDropWindow}
                 renderWindow={(id: string | null) => {
                   if (id) {
-                    return props.renderWindow(layout.windowMap[id]);
+                    return props.renderWindow(layout.windows[id]);
                   } else {
                     return <></>;
                   }
