@@ -65,6 +65,7 @@ export function LayoutSystem(props: {
   windowManager: WindowManager;
   initialLayout: LayoutData;
   spacerSize?: number;
+  onChangeLayout?: (newLayout: LayoutData) => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const onDragStart = useCallback(() => {
@@ -84,6 +85,7 @@ export function LayoutSystem(props: {
     <WindowManagerContext.Provider value={props.windowManager}>
       <DraggingContext.Provider value={dragging}>
         <EditableLayout
+          onChangeLayout={props.onChangeLayout}
           spacerSize={props.spacerSize}
           width={props.width}
           height={props.height}
